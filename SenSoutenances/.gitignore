@@ -1,0 +1,156 @@
+## [Visual Studio]
+*.swp
+*.*~
+project.lock.json
+.DS_Store
+*.pyc
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files (MonoDevelop/Xamarin Studio)
+*.userprefs
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# Visual Studio 2015/2017 cache/options directory
+.vs/
+# Uncomment if you have tasks that create the project's static files in wwwroot
+#wwwroot/
+
+# Visual Studio 2017 Auto Generated files
+Generated\ Files/
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# NUNIT
+*.VisualState.xml
+TestResult.xml
+
+# Build log of MSBuild
+*.log
+
+# StyleCop
+StyleCopReport.xml
+
+# Files built by Visual Studio
+*.lastcodeanalysissucceeded
+*.NetCollectorsvg
+*.pfx
+*.publishsettings
+
+# Guidance Extension builds
+*.gpState
+
+# ReSharper is a tool for professional developers
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# JustCode
+.JustCode
+
+# TeamCity is a build server
+_TeamCity*
+
+# DotCover is a Code Coverage Tool
+*.dotCover
+
+# AxoCover is a Code Coverage Tool
+.axoCover/*
+!.axoCover/settings.json
+
+# Visual Studio code coverage results
+*.coverage
+*.coveragexml
+
+# NCrunch
+_NCrunch_*
+.*crunch*.local.xml
+nCrunchTemp_*
+
+# MightyMoose
+*.mm.*
+AutoTest.Net/
+
+# Web workbench (sass)
+.sass-cache/
+
+# Installshield output folder
+[Ee]xpress/
+
+# DocProject is a documentation generator
+DocProject/buildhelp/
+DocProject/Help/*.mcgh
+
+# NDOC is a documentation generator
+doc/bin/
+
+# NuGet Packages
+*.nupkg
+# The packages folder can be ignored because of Package Restore
+**/[Pp]ackages/*
+# except build/, which is used as an MSBuild target.
+!**/[Pp]ackages/build/
+# Uncomment if using NuGet repositories to store project specific packages (not recommended)
+# !packages/
+
+# NuGet Symbol Packages
+*.snupkg
+
+# BOWER
+bower_components/
+
+# Node.js
+node_modules/
+npm-debug.log
+
+# VSCode
+.vscode/
+
+# VS Office Extension
+*.filtrated
+
+# SharePoint Files
+pkg/
+pkgobj/
+
+# GhostDoc Studio sessions
+*.GhostDoc.xml
+
+# Paket dependency manager
+.paket/
+paket-files/
+
+# FAKE - F# Make
+.fake/
+
+# CodeRush personal settings
+.cr/personal.settings.json
+
+# JetBrains Rider codestyle settings
+.idea/.idea.*/.idea/codeStyles/codeStyleConfig.xml
+.idea/.idea.*/.idea/namingsettings.json
+.idea/.idea.*/.idea/checkstyle-idea.xml
+
+# Client-side JavaScript libraries managed by Visual Studio
+wwwroot/lib/
+
+# Memory dumps
+*.dmp
