@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard Vétérinaire — Bergerie Al-Baraka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+    <link rel="stylesheet" th:href="@{/css/app.css}"/>
+</head>
+<body>
+<nav class="navbar navbar-dark fixed-top">
+    <div class="d-flex align-items-center gap-3 ms-3">
+        <button class="btn btn-sm" id="sidebarToggle"><i class="bi bi-list fs-4"></i></button>
+        <span class="navbar-brand mb-0 fw-bold">
+            <i class="bi bi-hospital-fill text-accent me-2"></i>Bergerie Al-Baraka
+        </span>
+    </div>
+    <div class="d-flex align-items-center gap-3 me-3">
+        <a th:href="@{/alertes}" class="btn btn-sm btn-outline-warning">
+            <i class="bi bi-bell-fill"></i>
+        </a>
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="bi bi-hospital me-1"></i>
+                <span th:text="${utilisateur.prenom + ' ' + utilisateur.nom}">Vétérinaire</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><form th:action="@{/logout}" method="post">
+                    <button class="dropdown-item text-danger" type="submit">
+                        <i class="bi bi-box-arrow-right me-2"></i>Déconnexion
+                    </button>
+                </form></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="layout-wrapper">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-label">Navigation</div>
+            <a th:href="@{/dashboard/veterinaire}" class="sidebar-link active">
+                <i class="bi bi-speedometer2"></i><span>Dashboard</span></a>
+            <a th:href="@{/animaux}" class="sidebar-link">
+                <i class="bi bi-emoji-smile"></i><span>Animaux</span></a>
+            <a th:href="@{/alertes}" class="sidebar-link">
+                <i class="bi bi-bell"></i><span>Alertes</span></a>
+            <a th:href="@{/actes-medicaux}" class="sidebar-link">
+                <i class="bi bi-heart-pulse"></i><span>Actes Médicaux</span></a>
+            <a th:href="@{/actes-medicaux/nouveau}" class="sidebar-link">
+                <i class="bi bi-plus-circle"></i><span>Nouvel Acte</span></a>
+            <a th:href="@{/donnees-env}" class="sidebar-link">
+                <i class="bi bi-thermometer-half"></i><span>Données Env.</span></a>
+        </div>
+    </aside>
+
+    <main class="main-content" id="mainContent">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Dashboard Vétérinaire</h1>
+                <p class="page-subtitle">
+                    Dr. <span th:text="${utilisateur.prenom + ' ' + utilisateur.nom}">Samira Hamidi</span>
+                </p>
+            </div>
+            <a th:href="@{/actes-medicaux/nouveau}" class="btn-primary-custom">
+                <i class="bi bi-plus-lg me-2"></i>Nouvel Acte Médical
+            </a>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="stats-grid">
+            <div class="stat-card stat-card-blue">
+                <div class="stat-icon"><i class="bi bi-collection"></i></div>
+                <div class="stat-value" th:text="${totalAnimaux}">0</div>
+                <div class="stat-label">Total Animaux</div>
+            </div>
+            <div class="stat-card stat-card-orange">
+                <div class="stat-icon"><i class="bi bi-thermometer-high"></i></div>
+                <div class="stat-value" th:text="${animauxMalades}">0</div>
+                <div class="stat-label">Animaux Malades</div>
+            </div>
+            <div class="stat-card stat-card-red">
+                <div class="stat-icon"><i class="bi bi-exclamation-triangle"></i></div>
+                <div class="stat-value" th:text="${animauxCritiques}">0</div>
+                <div class="stat-label">Critiques</div>
+            </div>
+            <div class="stat-card stat-card-green">
+                <div class="stat-icon"><i class="bi bi-shield-check"></i></div>
+                <div class="stat-value" th:text="${totalVaccinations}">0</div>
+                <div class="stat-label">Vaccinations</div>
+            </div>
+            <div class="stat-card stat-card-purple">
+                <div class="stat-icon"><i class="bi bi-capsule"></i></div>
+                <div class="stat-value" th:text="${totalTraitements}">0</div>
+                <div class="stat-label">Traitements</div>
+            </div>
+        </div>
+
+        <!-- Charts + Alertes -->
+        <div class="dashboard-grid">
+            <!-- Chart Santé -->
+            <div class="card-dark">
+                <div class="card-dark-header">
+                    <i class="bi bi-pie-chart-fill text-accent me-2"></i>Répartition par Santé
+                </div>
+                <div class="chart-container">
+                    <canvas id="santeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart Actes Médicaux -->
+            <div class="card-dark">
+                <div class="card-dark-header">
+                    <i class="bi bi-bar-chart-fill text-accent me-2"></i>Statistiques Médicales
+                </div>
+                <div class="chart-container">
+                    <canvas id="actesChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Alertes sanitaires critiques -->
+            <div class="card-dark">
+                <div class="card-dark-header">
+                    <i class="bi bi-heart-pulse text-danger me-2"></i>Alertes Sanitaires
+                    <a th:href="@{/alertes}" class="btn btn-sm btn-outline-danger ms-auto">Voir tout</a>
+                </div>
+                <div class="alert-list">
+                    <div th:if="${dernieresAlertes == null || #lists.isEmpty(dernieresAlertes)}"
+                         class="text-muted text-center py-3">Aucune alerte sanitaire</div>
+                    <div th:each="alerte : ${dernieresAlertes}" class="alert-item"
+                         th:classappend="${alerte.statutAlerte.name() == 'NON_LUE'} ? 'unread' : ''">
+                        <div class="d-flex gap-3">
+                            <div class="alert-badge"
+                                 th:classappend="${alerte.niveau.name() == 'URGENCE'} ? 'badge-urgence' :
+                                                 (${alerte.niveau.name() == 'CRITIQUE'} ? 'badge-critique' : 'badge-warning')">
+                                <i class="bi bi-exclamation-circle"></i>
+                            </div>
+                            <div>
+                                <div class="alert-type" th:text="${alerte.type}">TYPE</div>
+                                <div class="alert-msg" th:text="${alerte.message}">Message</div>
+                                <div class="alert-time"
+                                     th:text="${#temporals.format(alerte.dateHeure, 'dd/MM HH:mm')}">Date</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accès rapides vétérinaire -->
+            <div class="card-dark">
+                <div class="card-dark-header">
+                    <i class="bi bi-lightning-fill text-accent me-2"></i>Accès Rapides
+                </div>
+                <div class="quick-actions">
+                    <a th:href="@{/animaux}" class="quick-action-btn">
+                        <i class="bi bi-collection fs-4 mb-2"></i><span>Animaux</span>
+                    </a>
+                    <a th:href="@{/actes-medicaux/nouveau}" class="quick-action-btn">
+                        <i class="bi bi-plus-circle fs-4 mb-2"></i><span>Nouvel Acte</span>
+                    </a>
+                    <a th:href="@{/actes-medicaux}" class="quick-action-btn">
+                        <i class="bi bi-clipboard-pulse fs-4 mb-2"></i><span>Historique</span>
+                    </a>
+                    <a th:href="@{/alertes}" class="quick-action-btn">
+                        <i class="bi bi-bell fs-4 mb-2"></i><span>Alertes</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script th:inline="javascript">
+    const statsSante = /*[[${statsSante}]]*/ [];
+    new Chart(document.getElementById('santeChart'), {
+        type: 'doughnut',
+        data: {
+            labels: statsSante.map(s => s[0]),
+            datasets: [{ data: statsSante.map(s => s[1]),
+                backgroundColor:['#10b981','#ef4444','#f59e0b','#6366f1','#3b82f6'],
+                borderWidth:0 }]
+        },
+        options: { responsive:true, maintainAspectRatio:false, cutout:'65%',
+            plugins:{ legend:{ position:'bottom', labels:{ color:'#94a3b8' } } } }
+    });
+
+    const vaccinations = /*[[${totalVaccinations}]]*/ 0;
+    const traitements  = /*[[${totalTraitements}]]*/  0;
+    const analyses     = /*[[${totalAnalyses}]]*/     0;
+    const consultations= /*[[${totalConsultations}]]*/0;
+
+    new Chart(document.getElementById('actesChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Vaccinations','Traitements','Analyses','Consultations'],
+            datasets: [{
+                data: [vaccinations, traitements, analyses, consultations],
+                backgroundColor: ['#10b981','#f59e0b','#3b82f6','#6366f1'],
+                borderRadius: 8, borderWidth: 0
+            }]
+        },
+        options: {
+            responsive:true, maintainAspectRatio:false,
+            plugins:{ legend:{ display:false } },
+            scales: {
+                x:{ grid:{ color:'rgba(255,255,255,0.05)' }, ticks:{ color:'#94a3b8' } },
+                y:{ grid:{ color:'rgba(255,255,255,0.05)' }, ticks:{ color:'#94a3b8' } }
+            }
+        }
+    });
+
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+        document.getElementById('sidebar').classList.toggle('collapsed');
+        document.getElementById('mainContent').classList.toggle('expanded');
+    });
+</script>
+</body>
+</html>

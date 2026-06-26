@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout/base :: head('Dashboard Éleveur')}">
+    <title>Dashboard Éleveur</title>
+</head>
+<body>
+<div th:replace="~{layout/base :: layout(~{::main-content})}">
+<th:block th:fragment="main-content">
+
+<div th:replace="~{layout/base :: body}">
+</div>
+
+</th:block>
+</div>
+</body>
+</html>
