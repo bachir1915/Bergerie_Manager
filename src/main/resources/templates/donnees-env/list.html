@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Données Environnementales — Bergerie Al-Baraka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+    <link rel="stylesheet" th:href="@{/css/app.css}"/>
+</head>
+<body>
+<nav class="navbar navbar-dark fixed-top">
+    <div class="d-flex align-items-center gap-3 ms-3">
+        <button class="btn btn-sm" id="sidebarToggle"><i class="bi bi-list fs-4"></i></button>
+        <span class="navbar-brand mb-0 fw-bold">
+            <i class="bi bi-house-heart-fill text-accent me-2"></i>Bergerie Al-Baraka
+        </span>
+    </div>
+    <div class="d-flex align-items-center gap-3 me-3">
+        <a th:href="@{/alertes}" class="btn btn-sm btn-outline-warning">
+            <i class="bi bi-bell-fill"></i>
+        </a>
+        <form th:action="@{/logout}" method="post">
+            <button class="btn btn-sm btn-outline-danger" type="submit">
+                <i class="bi bi-box-arrow-right"></i>
+            </button>
+        </form>
+    </div>
+</nav>
+
+<div class="layout-wrapper">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-label">Navigation</div>
+            <a href="/dashboard/eleveur" class="sidebar-link">
+                <i class="bi bi-speedometer2"></i><span>Dashboard</span></a>
+            <a href="/animaux" class="sidebar-link">
+                <i class="bi bi-emoji-smile"></i><span>Animaux</span></a>
+            <a href="/alertes" class="sidebar-link">
+                <i class="bi bi-bell"></i><span>Alertes</span></a>
+            <a href="/actes-medicaux" class="sidebar-link">
+                <i class="bi bi-heart-pulse"></i><span>Actes Médicaux</span></a>
+            <a href="/localisation" class="sidebar-link">
+                <i class="bi bi-geo-alt"></i><span>Localisation</span></a>
+            <a href="/donnees-env" class="sidebar-link active">
+                <i class="bi bi-thermometer-half"></i><span>Données Env.</span></a>
+        </div>
+    </aside>
+
+    <main class="main-content" id="mainContent">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">
+                    <span th:if="${zone != null}" th:text="'Climat & Environnement : ' + ${zone.nom}">Climat & Environnement</span>
+                    <span th:if="${zone == null}">Données Environnementales Globales</span>
+                </h1>
+                <p class="page-subtitle">Relevés de température, humidité et conditions d'élevage</p>
+            </div>
+        </div>
+
+        <!-- Filter by Zone -->
+        <div class="card-dark mb-4">
+            <div class="d-flex gap-3 align-items-center flex-wrap">
+                <label class="text-muted small fw-bold">Filtrer par Zone :</label>
+                <select class="form-select-dark" onchange="location = this.value;">
+                    <option th:value="@{/donnees-env}" th:selected="${zone == null}">Toutes les zones</option>
+                    <option th:each="z : ${zones}"
+                            th:value="@{'/donnees-env/zone/' + ${z.id}}"
+                            th:text="${z.nom}"
+                            th:selected="${zone != null && z.id == zone.id}"></option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Data table -->
+        <div class="card-dark">
+            <div class="table-responsive">
+                <table class="table-dark-custom">
+                    <thead>
+                        <tr>
+                            <th>Date / Heure</th>
+                            <th>Zone</th>
+                            <th>Température</th>
+                            <th>Humidité</th>
+                            <th>Capteur</th>
+                            <th>Index de confort</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${donnees == null || #lists.isEmpty(donnees)}">
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="bi bi-thermometer-snow fs-2 d-block mb-2"></i>Aucun relevé environnemental disponible.
+                            </td>
+                        </tr>
+                        <tr th:each="d : ${donnees}">
+                            <td th:text="${d.dateHeure != null ? #temporals.format(d.dateHeure,'dd/MM/yyyy HH:mm') : 'N/A'}">Date</td>
+                            <td>
+                                <strong th:text="${d.zone != null ? d.zone.nom : 'Inconnue'}">Zone</strong>
+                            </td>
+                            <td>
+                                <span th:text="${d.temperature != null ? d.temperature + ' °C' : 'N/A'}"
+                                      th:classappend="${d.temperature != null && d.temperature > 30} ? 'text-danger fw-bold' :
+                                                       (${d.temperature != null && d.temperature < 10} ? 'text-info fw-bold' : 'text-success')">24 °C</span>
+                            </td>
+                            <td>
+                                <span th:text="${d.humidite != null ? d.humidite + ' %' : 'N/A'}"
+                                      th:classappend="${d.humidite != null && (d.humidite > 80 || d.humidite < 30)} ? 'text-warning fw-bold' : 'text-success'">60%</span>
+                            </td>
+                            <td>
+                                <code th:text="${d.capteur != null ? d.capteur.type : 'Intégré'}">CAP-DHT</code>
+                            </td>
+                            <td>
+                                <!-- Heat stress index representation -->
+                                <span class="badge-sante"
+                                      th:classappend="${d.temperature != null && d.temperature > 28} ? 'sante-observation' :
+                                                       (${d.temperature != null && d.temperature > 35} ? 'sante-malade' : 'sante-bon')">
+                                    <span th:if="${d.temperature != null && d.temperature > 28}">Stress thermique léger</span>
+                                    <span th:if="${d.temperature != null && d.temperature > 35}">Stress thermique sévère</span>
+                                    <span th:if="${d.temperature == null || d.temperature <= 28}">Climat Optimal</span>
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+        document.getElementById('sidebar').classList.toggle('collapsed');
+        document.getElementById('mainContent').classList.toggle('expanded');
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,520 @@
+<div class="landing-page">
+  <!-- 1. En-tête / Barre de navigation vitrine -->
+  <header class="landing-header">
+    <div class="landing-nav-container">
+      <div class="brand" routerLink="/">
+        <div class="brand-icon-wrap">
+          <img src="images/logo-bergerie.png" alt="DIOURGUI Logo" class="brand-logo-img" />
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">DIOURGUI</span>
+          <span class="brand-sub">Plateforme Pastorale & Suivi Vétérinaire</span>
+        </div>
+      </div>
+
+      <nav class="nav-links" aria-label="Navigation principale">
+        <a href="#features" (click)="scrollToSection('features', $event)">Fonctionnalités</a>
+        <a href="#features" (click)="scrollToSection('iot', $event)">Capteurs IoT</a>
+        <a href="#features" (click)="scrollToSection('sante', $event)">Santé & Prévention</a>
+        <a href="#faq" (click)="scrollToSection('faq', $event)">FAQ</a>
+      </nav>
+
+      <div class="nav-actions">
+        @if (authService.isAuthenticated()) {
+          <a [routerLink]="dashboardUrl" class="btn-nav-primary">
+            <i class="bi bi-speedometer2"></i>
+            <span>Mon Espace</span>
+          </a>
+        } @else {
+          <a routerLink="/login" class="btn-nav-ghost" id="nav-login-btn">
+            <i class="bi bi-box-arrow-in-right"></i>
+            <span>Connexion</span>
+          </a>
+          <a routerLink="/inscription" class="btn-nav-primary" id="nav-register-btn">
+            <i class="bi bi-person-plus-fill"></i>
+            <span>Créer mon compte</span>
+          </a>
+        }
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. Hero Section Principale -->
+  <section class="hero-section">
+    <div class="hero-glow hero-glow-1"></div>
+    <div class="hero-glow hero-glow-2"></div>
+
+    <div class="hero-container">
+      <h1 class="hero-title">
+        La gestion bienveillante de votre bergerie,
+        <span class="text-gradient">de l'enclos aux soins vétérinaires.</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        Pilotez votre cheptel avec soin, suivez le confort de vos bergeries grâce à des sondes connectées,
+        collaborez étroitement avec votre vétérinaire référent et préservez la vitalité de chaque bête au quotidien.
+      </p>
+
+
+      <div class="hero-trust-metrics">
+        <div class="trust-item">
+          <i class="bi bi-patch-check-fill text-success"></i>
+          <span>Adapté aux races locales &amp; ovins</span>
+        </div>
+        <div class="trust-item">
+          <i class="bi bi-cpu-fill text-forest"></i>
+          <span>Télémétrie capteurs LoRa / ESP32</span>
+        </div>
+        <div class="trust-item">
+          <i class="bi bi-heart-pulse-fill text-clay"></i>
+          <span>Suivi par vétérinaires validés</span>
+        </div>
+      </div>
+
+      <!-- Photo bélier hero + Maquette dynamique interactive du Dashboard -->
+      <div class="hero-split-wrapper">
+        <div class="hero-sheep-photo">
+          <img src="images/belier.jpg" alt="Bélier Ouled Djellal — DIOURGUI" loading="lazy" />
+        </div>
+
+        <div class="hero-mockup-wrapper hero-mockup-right">
+          <div class="mockup-frame">
+            <div class="mockup-topbar">
+              <div class="mockup-dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <div class="mockup-url-bar">
+                <i class="bi bi-lock-fill"></i>
+                <span>app.bergerie-albaraka.com / dashboard / eleveur</span>
+              </div>
+              <span class="mockup-tag">Aperçu en direct</span>
+            </div>
+
+            <div class="mockup-content">
+              <!-- Mini KPIs -->
+              <div class="mockup-kpis">
+                <div class="mockup-kpi-card">
+                  <span class="kpi-label">Cheptel actif</span>
+                  <div class="kpi-val-row">
+                    <span class="kpi-number">48</span>
+                    <span class="kpi-badge success"><i class="bi bi-arrow-up"></i> +4 naissances</span>
+                  </div>
+                  <small class="kpi-sub">34 brebis · 10 agneaux · 4 béliers</small>
+                </div>
+
+                <div class="mockup-kpi-card">
+                  <span class="kpi-label">Indice de santé global</span>
+                  <div class="kpi-val-row">
+                    <span class="kpi-number">98.2%</span>
+                    <span class="kpi-badge gold"><i class="bi bi-shield-check"></i> Excellent</span>
+                  </div>
+                  <small class="kpi-sub">0 cas critique en cours</small>
+                </div>
+
+                <div class="mockup-kpi-card">
+                  <span class="kpi-label">Climat Enclos Principal</span>
+                  <div class="kpi-val-row">
+                    <span class="kpi-number">23.8°C</span>
+                    <span class="kpi-badge info"><i class="bi bi-droplet-half"></i> 54% Hum.</span>
+                  </div>
+                  <small class="kpi-sub">Conditions thermiques optimales</small>
+                </div>
+
+                <div class="mockup-kpi-card alert-card">
+                  <span class="kpi-label">Vigilance Sanitaire</span>
+                  <div class="kpi-val-row">
+                    <span class="kpi-number text-forest">Suivi Actif</span>
+                    <span class="kpi-badge success"><i class="bi bi-clipboard2-pulse"></i> Visite à jour</span>
+                  </div>
+                  <small class="kpi-sub">Brebis #104 : examen clinique rassurant</small>
+                </div>
+              </div>
+
+              <!-- Mini Live Feed -->
+              <div class="mockup-body-grid">
+                <div class="mockup-table-preview">
+                  <div class="preview-header">
+                    <strong>Derniers mouvements &amp; alertes</strong>
+                    <span class="pulse-indicator">Temps réel</span>
+                  </div>
+                  <div class="preview-row">
+                    <span class="animal-avatar">🐑 #104</span>
+                    <div class="row-info">
+                      <strong>Brebis Ouled Djellal — Enclos Nord</strong>
+                      <small>Dernière pesée : 62.5 kg · Statut : Convalescence</small>
+                    </div>
+                    <span class="status-pill warn">Suivi nutrition</span>
+                  </div>
+                  <div class="preview-row">
+                    <span class="animal-avatar">🐑 #112</span>
+                    <div class="row-info">
+                      <strong>Bélier Reproducteur — Enclos A</strong>
+                      <small>Vaccination annuelle validée par Dr. Hamidi</small>
+                    </div>
+                    <span class="status-pill success">À jour</span>
+                  </div>
+                </div>
+
+                <div class="mockup-chart-preview">
+                  <div class="preview-header">
+                    <strong>Courbe hygrométrie &amp; chaleur (24h)</strong>
+                    <small>Capteur ESP32-Enclos-1</small>
+                  </div>
+                  <div class="simulated-chart">
+                    <div class="chart-bar-group">
+                      <div class="bar" style="height: 45%"></div>
+                      <div class="bar" style="height: 60%"></div>
+                      <div class="bar" style="height: 75%"></div>
+                      <div class="bar highlight" style="height: 85%"></div>
+                      <div class="bar" style="height: 70%"></div>
+                      <div class="bar" style="height: 55%"></div>
+                      <div class="bar" style="height: 40%"></div>
+                    </div>
+                    <div class="chart-legend">
+                      <span>Matin</span>
+                      <span>Midi (Pic 28°C)</span>
+                      <span>Soir</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div><!-- /hero-mockup-right -->
+      </div><!-- /hero-split-wrapper -->
+    </div>
+  </section>
+
+  <!-- 3. Section Fonctionnalités Complètes (Onglets Interactifs) -->
+  <section class="features-section" id="features">
+    <div class="section-container">
+      <div class="section-badge">
+        <i class="bi bi-grid-fill"></i> Plateforme Complète
+      </div>
+      <h2 class="section-title">Tout ce qu'il faut pour piloter votre élevage</h2>
+      <p class="section-sub">Découvrez les 4 modules fondamentaux conçus sur mesure pour le quotidien de la bergerie.</p>
+
+      <!-- Onglets sélecteurs -->
+      <div class="feature-tabs">
+        <button
+          class="tab-btn"
+          [class.active]="activeTab() === 'cheptel'"
+          (click)="setTab('cheptel')">
+          <i class="bi bi-collection-play-fill"></i>
+          <span>Troupeau & Cheptel</span>
+        </button>
+        <button
+          class="tab-btn"
+          [class.active]="activeTab() === 'iot'"
+          (click)="setTab('iot')">
+          <i class="bi bi-thermometer-sun"></i>
+          <span>Capteurs IoT & Climat</span>
+        </button>
+        <button
+          class="tab-btn"
+          [class.active]="activeTab() === 'vet'"
+          (click)="setTab('vet')">
+          <i class="bi bi-hospital-fill"></i>
+          <span>Espace Vétérinaire</span>
+        </button>
+        <button
+          class="tab-btn"
+          [class.active]="activeTab() === 'sante'"
+          (click)="setTab('sante')">
+          <i class="bi bi-shield-heart-fill"></i>
+          <span>Santé & Prévention</span>
+        </button>
+      </div>
+
+      <!-- Contenu de l'onglet actif -->
+      <div class="tab-card">
+        @if (activeTab() === 'cheptel') {
+          <div class="tab-panel">
+            <div class="panel-content">
+              <span class="panel-tag">Gestion & Traçabilité</span>
+              <h3>Inventaire numérique précis et généalogie ovine</h3>
+              <p>
+                Finis les registres papier égarés. Chaque animal possède sa fiche d'identité numérique complète :
+                numéro de boucle, sexe, race, date de naissance, filiation (père et mère), et historique complet des pesées.
+              </p>
+              <ul class="panel-features-list">
+                <li><i class="bi bi-check-circle-fill"></i> Suivi des cycles de reproduction et gestation calculée automatiquement.</li>
+                <li><i class="bi bi-check-circle-fill"></i> Historique de croissance et suivi du gain moyen quotidien (GMQ).</li>
+                <li><i class="bi bi-check-circle-fill"></i> Filtrage instantané par enclos, état de santé ou tranche d'âge.</li>
+              </ul>
+              <a routerLink="/login" class="btn-panel-action">
+                Accéder au registre <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+            <div class="panel-visual panel-visual-cheptel panel-photo">
+              <img src="images/belier.jpg" alt="Bélier Ouled Djellal — identification numérique" class="panel-img" loading="lazy" />
+              <div class="panel-photo-overlay">
+                <div class="v-header">
+                  <i class="bi bi-tag-fill text-gold"></i>
+                  <span>Fiche #DZ-OD-012</span>
+                </div>
+                <div class="v-stat">Bélier Reproducteur Ouled Djellal</div>
+                <div class="v-sub">Âge : 3 ans · Lignée certifiée · Poids : 94 kg</div>
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (activeTab() === 'iot') {
+          <div class="tab-panel">
+            <div class="panel-content">
+              <span class="panel-tag">IoT & Télémétrie</span>
+              <h3>Surveillance thermique et alertes coup de chaleur</h3>
+              <p>
+                Le bien-être animal commence par des conditions d'enclos saines. Nos capteurs connectés
+                remontent en continu la température ambiante, l'hygrométrie et le niveau de ventilation.
+              </p>
+              <ul class="panel-features-list">
+                <li><i class="bi bi-check-circle-fill"></i> Alertes automatiques en cas de canicule ou de froid critique.</li>
+                <li><i class="bi bi-check-circle-fill"></i> Graphiques d'historique 24h et 7 jours pour identifier les pics.</li>
+                <li><i class="bi bi-check-circle-fill"></i> Seuil paramétrable selon la race et la sensibilité des agneaux.</li>
+              </ul>
+              <a routerLink="/login" class="btn-panel-action">
+                Consulter les capteurs <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+            <div class="panel-visual panel-visual-iot iot-sensor-showcase">
+              <div class="sensor-grid">
+                <div class="sensor-card sensor-card-main">
+                  <div class="sensor-img-wrap">
+                    <img src="images/iot/module-esp32.jpg" alt="Carte ESP32 — microcontrôleur principal" loading="lazy" />
+                  </div>
+                  <div class="sensor-info">
+                    <span class="sensor-badge"><i class="bi bi-cpu"></i> Cerveau Central</span>
+                    <h4>ESP32</h4>
+                    <p>Microcontrôleur Wi-Fi/BLE qui orchestre tous les capteurs et transmet les données en temps réel.</p>
+                  </div>
+                </div>
+                <div class="sensor-card">
+                  <div class="sensor-img-wrap">
+                    <img src="images/iot/sensor-temp-humidity.png" alt="Capteur de température et humidité" loading="lazy" />
+                  </div>
+                  <div class="sensor-info">
+                    <span class="sensor-badge"><i class="bi bi-thermometer-half"></i> Température</span>
+                    <h4>DHT22 / SHT31</h4>
+                    <p>Mesure température & humidité en temps réel dans l'enclos.</p>
+                  </div>
+                </div>
+                <div class="sensor-card">
+                  <div class="sensor-img-wrap">
+                    <img src="images/iot/sensor-air-quality.png" alt="Capteur de qualité d'air" loading="lazy" />
+                  </div>
+                  <div class="sensor-info">
+                    <span class="sensor-badge"><i class="bi bi-wind"></i> Qualité Air</span>
+                    <h4>MQ-135</h4>
+                    <p>Surveille les gaz nocifs (NH₃, CO₂) pour garantir une ventilation saine.</p>
+                  </div>
+                </div>
+                <div class="sensor-card">
+                  <div class="sensor-img-wrap">
+                    <img src="images/iot/sensor-gps.png" alt="Module GPS de géolocalisation" loading="lazy" />
+                  </div>
+                  <div class="sensor-info">
+                    <span class="sensor-badge"><i class="bi bi-geo-alt"></i> GPS</span>
+                    <h4>NEO-6M</h4>
+                    <p>Localisation précise du troupeau lors des déplacements en pâturage.</p>
+                  </div>
+                </div>
+                <div class="sensor-card">
+                  <div class="sensor-img-wrap">
+                    <img src="images/iot/module-gsm.png" alt="Module GSM pour communication cellulaire" loading="lazy" />
+                  </div>
+                  <div class="sensor-info">
+                    <span class="sensor-badge"><i class="bi bi-sim"></i> GSM</span>
+                    <h4>SIM800L</h4>
+                    <p>Communication cellulaire pour les alertes SMS hors portée Wi-Fi.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (activeTab() === 'vet') {
+          <div class="tab-panel">
+            <div class="panel-content">
+              <span class="panel-tag">Santé & Partenariat</span>
+              <h3>Carnet de santé collaboratif avec votre vétérinaire</h3>
+              <p>
+                Donnez à votre vétérinaire un accès dédié à votre exploitation avec votre code bergerie.
+                Il consulte les antécédents, consigne ses diagnostics et planifie les rappels de vaccination.
+              </p>
+              <ul class="panel-features-list">
+                <li><i class="bi bi-check-circle-fill"></i> Traçabilité réglementaire des médicaments et temps d'attente.</li>
+                <li><i class="bi bi-check-circle-fill"></i> Validation officielle des comptes vétérinaires par administration.</li>
+                <li><i class="bi bi-check-circle-fill"></i> Notification instantanée à l'éleveur lors de chaque acte médical.</li>
+              </ul>
+              <a routerLink="/login" class="btn-panel-action">
+                Accéder à l'espace médical <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+            <!-- Duo de photos vétérinaires réelles -->
+            <div class="panel-visual panel-photo-duo">
+              <div class="photo-duo-grid">
+                <div class="photo-duo-main">
+                  <img src="images/vet-agneau.png" alt="Vétérinaire portant un agneau dans la bergerie" class="panel-img" loading="lazy" />
+                  <div class="photo-duo-caption">
+                    <i class="bi bi-heart-pulse-fill"></i>
+                    <span>Diagnostic terrain par Dr. Hamidi</span>
+                  </div>
+                </div>
+                <div class="photo-duo-secondary">
+                  <img src="images/vet-soin.png" alt="Vétérinaire administrant un soin à un mouton" class="panel-img" loading="lazy" />
+                  <div class="photo-duo-caption">
+                    <i class="bi bi-clipboard2-pulse-fill"></i>
+                    <span>Vaccination en enclos — acte enregistré</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (activeTab() === 'sante') {
+          <div class="tab-panel">
+            <div class="panel-content">
+              <span class="panel-tag">Observation Terrain & Prévention</span>
+              <h3>L'expertise vétérinaire au chevet du troupeau</h3>
+              <p>
+                Parce que rien ne remplace le regard de l'éleveur et le diagnostic du praticien,
+                chaque observation clinique, relevé thermique ou variation de rythme est partagé instantanément
+                pour agir avec bienveillance et préserver la santé de vos brebis et agneaux.
+              </p>
+              <ul class="panel-features-list">
+                <li><i class="bi bi-check-circle-fill"></i> Détection attentive du stress thermique et des premiers inconforts.</li>
+                <li><i class="bi bi-check-circle-fill"></i> Bilan clinique individualisé et carnet d'observation pour chaque bête.</li>
+                <li><i class="bi bi-check-circle-fill"></i> Conseils personnalisés et visites de suivi avec votre vétérinaire référent.</li>
+              </ul>
+              <a routerLink="/login" class="btn-panel-action">
+                Découvrir le carnet de santé <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+            <div class="panel-visual panel-photo panel-visual-sante">
+              <img src="images/vet-animaux.png" alt="Vétérinaire et éleveur examinant les animaux de la bergerie" class="panel-img panel-img-contain" loading="lazy" />
+              <div class="panel-photo-overlay sante-overlay">
+                <div class="v-header">
+                  <i class="bi bi-clipboard2-pulse-fill text-forest"></i>
+                  <span>Bilan Clinique Référent</span>
+                </div>
+                <div class="v-stat text-forest">Troupeau en excellente forme</div>
+                <div class="v-sub">Recommandation : Pâturage régulier et hydratation maintenue</div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Section FAQ rapide -->
+  <section class="faq-section" id="faq">
+    <div class="section-container">
+      <div class="section-badge">
+        <i class="bi bi-question-circle-fill"></i> Questions Fréquentes
+      </div>
+      <h2 class="section-title">Tout ce que vous devez savoir avant de commencer</h2>
+
+      <div class="faq-grid">
+        <div class="faq-item">
+          <h4><i class="bi bi-shield-check"></i> Comment démarrer sur la plateforme ?</h4>
+          <p>Créez simplement votre compte ou connectez-vous. Vous pourrez aussitôt renseigner votre cheptel, configurer vos sondes ou inviter votre vétérinaire.</p>
+        </div>
+
+        <div class="faq-item">
+          <h4><i class="bi bi-person-plus-fill"></i> Comment créer mon compte éleveur ou vétérinaire ?</h4>
+          <p>Cliquez sur « Créer un compte », renseignez vos informations et votre bergerie sera prête en quelques secondes.</p>
+        </div>
+
+        <div class="faq-item">
+          <h4><i class="bi bi-wifi"></i> Quel matériel est nécessaire pour les capteurs IoT ?</h4>
+          <p>L'application accepte n'importe quelle sonde compatible HTTP / LoRaWAN (ESP32, Arduino, capteurs commerciaux). Vous pouvez également utiliser l'application manuellement sans aucun capteur.</p>
+        </div>
+
+        <div class="faq-item">
+          <h4><i class="bi bi-hospital"></i> Comment mon vétérinaire peut-il rejoindre ma bergerie ?</h4>
+          <p>Votre bergerie dispose d'un code unique (ex: <code>AB-12-IV-34</code>). Il vous suffit de communiquer ce code à votre vétérinaire inscrit pour qu'il puisse consulter vos dossiers.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Bannière d'Appel à l'Action Finale -->
+  <section class="cta-banner-section" id="contact-section">
+    <div class="section-container">
+      <div class="cta-inner-card">
+        <div class="cta-content">
+          <h2>Prêt à optimiser la santé et la rentabilité de votre troupeau ?</h2>
+          <p>Rejoignez les éleveurs modernes qui combinent tradition pastorale et technologies connectées.</p>
+          <div class="cta-buttons">
+            <a routerLink="/login" class="btn-cta-demo">
+              <i class="bi bi-box-arrow-in-right"></i>
+              <span>Se Connecter</span>
+            </a>
+            <a routerLink="/inscription" class="btn-cta-signup">
+              <i class="bi bi-stars"></i>
+              <span>Créer mon compte</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Footer Vitrine -->
+  <footer class="landing-footer">
+    <div class="section-container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="brand">
+            <div class="brand-icon-wrap">
+              <img src="images/logo-bergerie.png" alt="DIOURGUI Logo" class="brand-logo-img" />
+            </div>
+            <span class="brand-title">DIOURGUI</span>
+          </div>
+          <p class="brand-desc">
+            Plateforme dédiée aux éleveurs et vétérinaires : gestion de cheptel, santé animale et suivi d'enclos.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h5>Découverte</h5>
+          <ul>
+            <li><a href="#features" (click)="scrollToSection('features', $event)">Fonctionnalités</a></li>
+            <li><a href="#features" (click)="scrollToSection('iot', $event)">Capteurs IoT & Climat</a></li>
+            <li><a href="#faq" (click)="scrollToSection('faq', $event)">FAQ</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Accès Rapides</h5>
+          <ul>
+            <li><a routerLink="/login">Espace Connexion</a></li>
+            <li><a routerLink="/inscription">Création de compte Éleveur</a></li>
+            <li><a routerLink="/inscription">Inscription Vétérinaire</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Support & Sécurité</h5>
+          <div class="system-status-pill">
+            <span class="pulse-green"></span>
+            <span>Plateforme & Services opérationnels</span>
+          </div>
+          <p class="footer-note">Données sécurisées conformément aux normes de santé animale.</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© 2026 DIOURGUI. Tous droits réservés.</span>
+        <span>Conçu pour l'excellence pastorale.</span>
+      </div>
+    </div>
+  </footer>
+</div>

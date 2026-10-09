@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${action + ' Animal — Bergerie Al-Baraka'}">Animal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+    <link rel="stylesheet" th:href="@{/css/app.css}"/>
+</head>
+<body>
+<nav class="navbar navbar-dark fixed-top">
+    <div class="d-flex align-items-center gap-3 ms-3">
+        <button class="btn btn-sm" id="sidebarToggle"><i class="bi bi-list fs-4"></i></button>
+        <span class="navbar-brand mb-0 fw-bold">
+            <i class="bi bi-house-heart-fill text-accent me-2"></i>Bergerie Al-Baraka
+        </span>
+    </div>
+    <div class="me-3">
+        <form th:action="@{/logout}" method="post" style="display:inline">
+            <button class="btn btn-sm btn-outline-danger" type="submit">
+                <i class="bi bi-box-arrow-right"></i>
+            </button>
+        </form>
+    </div>
+</nav>
+
+<div class="layout-wrapper">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-label">Navigation</div>
+            <a href="/animaux" class="sidebar-link active">
+                <i class="bi bi-emoji-smile"></i><span>Animaux</span></a>
+            <a href="/alertes" class="sidebar-link">
+                <i class="bi bi-bell"></i><span>Alertes</span></a>
+            <a href="/actes-medicaux" class="sidebar-link">
+                <i class="bi bi-heart-pulse"></i><span>Actes Médicaux</span></a>
+            <a href="/localisation" class="sidebar-link">
+                <i class="bi bi-geo-alt"></i><span>Localisation</span></a>
+        </div>
+    </aside>
+
+    <main class="main-content" id="mainContent">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title" th:text="${action} + ' un Animal'">Animal</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a th:href="@{/animaux}" class="text-accent">Animaux</a></li>
+                        <li class="breadcrumb-item active text-muted" th:text="${action}">Action</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="card-dark" style="max-width:700px">
+            <form th:action="${animal.id != null ? '/animaux/modifier/' + animal.id : '/animaux/nouveau'}"
+                  method="post">
+
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label class="form-label-dark">Nom de l'animal *</label>
+                        <input type="text" name="nom" class="form-control-dark"
+                               th:value="${animal.nom}" placeholder="Ex: Layla" required/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-dark">Race *</label>
+                        <input type="text" name="race" class="form-control-dark"
+                               th:value="${animal.race}" placeholder="Ex: Ouled Djellal" required/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-dark">Sexe *</label>
+                        <select name="sexe" class="form-select-dark" required>
+                            <option value="">-- Choisir --</option>
+                            <option th:each="s : ${sexes}" th:value="${s}"
+                                    th:text="${s == 'M' ? 'Mâle' : 'Femelle'}"
+                                    th:selected="${animal.sexe == s}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-dark">Poids (kg)</label>
+                        <input type="number" name="poids" class="form-control-dark"
+                               th:value="${animal.poids}" step="0.1" min="0" placeholder="45.5"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-dark">Date de naissance</label>
+                        <input type="date" name="dateNaissance" class="form-control-dark"
+                               th:value="${animal.dateNaissance}"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-dark">N° Capteur ESP32</label>
+                        <input type="text" name="numeroCapteur" class="form-control-dark"
+                               th:value="${animal.numeroCapteur}" placeholder="ESP-0001"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-dark">Statut</label>
+                        <select name="statut" class="form-select-dark">
+                            <option th:each="s : ${statuts}" th:value="${s}" th:text="${s}"
+                                    th:selected="${animal.statut == s}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-dark">Statut Santé</label>
+                        <select name="statutSante" class="form-select-dark">
+                            <option th:each="s : ${statutsSante}" th:value="${s}" th:text="${s}"
+                                    th:selected="${animal.statutSante == s}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column: 1/-1">
+                        <label class="form-label-dark">Bergerie *</label>
+                        <select name="bergerieId" class="form-select-dark" required>
+                            <option value="">-- Choisir une bergerie --</option>
+                            <option th:each="b : ${bergeries}" th:value="${b.id}" th:text="${b.nom}"
+                                    th:selected="${animal.bergerie?.id == b.id}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 mt-4">
+                    <button type="submit" class="btn-primary-custom">
+                        <i class="bi bi-check-lg me-2"></i>
+                        <span th:text="${action == 'Ajouter' ? 'Enregistrer' : 'Mettre à jour'}">Enregistrer</span>
+                    </button>
+                    <a th:href="@{/animaux}" class="btn-secondary-custom">
+                        <i class="bi bi-x-lg me-2"></i>Annuler
+                    </a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+        document.getElementById('sidebar').classList.toggle('collapsed');
+        document.getElementById('mainContent').classList.toggle('expanded');
+    });
+</script>
+</body>
+</html>

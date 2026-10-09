@@ -1,0 +1,171 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Animaux</h1>
+    <p class="page-subtitle">Cheptel — {{ animaux().length }} animal(aux) enregistré(s)</p>
+  </div>
+  @if (estEleveur) {
+    <button class="btn-primary-custom" (click)="ouvrirCreation()">
+      <i class="bi bi-plus-lg"></i> Ajouter un animal
+    </button>
+  }
+</div>
+
+<div class="stats-grid" style="margin-bottom:1.5rem">
+  <div class="stat-card stat-card-green" (click)="filtreSante.set('BON')" style="cursor:pointer" title="Filtrer bon état">
+    <div class="stat-value">{{ parSante('BON') }}</div>
+    <div class="stat-label">Bon état</div>
+  </div>
+  <div class="stat-card stat-card-orange" (click)="filtreSante.set('MALADE')" style="cursor:pointer" title="Filtrer malades">
+    <div class="stat-value">{{ parSante('MALADE') }}</div>
+    <div class="stat-label">Malades</div>
+  </div>
+  <div class="stat-card stat-card-red" (click)="filtreSante.set('CRITIQUE')" style="cursor:pointer" title="Filtrer critiques">
+    <div class="stat-value">{{ parSante('CRITIQUE') }}</div>
+    <div class="stat-label">Critiques</div>
+  </div>
+</div>
+
+@if (erreur()) { <div class="alert-flash alert-flash-danger">{{ erreur() }}</div> }
+
+@if (formOuvert()) {
+  <div class="card-dark form-card" style="margin-bottom: 1.5rem;">
+    <div class="card-dark-header">
+      <i class="bi bi-pencil-square text-accent"></i>
+      {{ editionId() ? 'Modifier la fiche de l\'animal' : 'Enregistrer un nouvel animal au cheptel' }}
+    </div>
+    <form [formGroup]="form" (ngSubmit)="enregistrer()" class="grid-form">
+      <label>Nom <input class="form-control-dark-inline" formControlName="nom" placeholder="Ex: Blanchette" /></label>
+      <label>Race <input class="form-control-dark-inline" formControlName="race" placeholder="Ex: Mérinos d'Arles" /></label>
+      <label>Sexe
+        <select class="form-select-dark" formControlName="sexe">
+          <option value="F">Femelle (Brebis)</option>
+          <option value="M">Mâle (Bélier)</option>
+        </select>
+      </label>
+      <label>Poids (kg) <input class="form-control-dark-inline" type="number" formControlName="poids" placeholder="Ex: 55.5" /></label>
+      <label>Date de naissance <input class="form-control-dark-inline" type="date" formControlName="dateNaissance" /></label>
+      <label>N° de capteur ESP32 <input class="form-control-dark-inline" formControlName="numeroCapteur" placeholder="Ex: ESP-SN-0001" /></label>
+      <label>Statut
+        <select class="form-select-dark" formControlName="statut">
+          @for (s of statuts; track s) { <option [value]="s">{{ s }}</option> }
+        </select>
+      </label>
+      <label>État de santé
+        <select class="form-select-dark" formControlName="statutSante">
+          @for (s of santes; track s) { <option [value]="s">{{ s }}</option> }
+        </select>
+      </label>
+      <label>Bergerie d'affectation
+        <select class="form-select-dark" formControlName="bergerieId">
+          <option [ngValue]="null">— choisir une bergerie —</option>
+          @for (b of bergeries(); track b.id) { <option [ngValue]="b.id">{{ b.nom }} ({{ b.code }})</option> }
+        </select>
+      </label>
+      <div class="form-actions">
+        <button type="submit" class="btn-primary-custom"><i class="bi bi-check-lg"></i> Enregistrer</button>
+        <button type="button" class="btn-cancel" (click)="annuler()">Annuler</button>
+      </div>
+    </form>
+  </div>
+}
+
+@if (loading()) {
+  <div class="card-dark">Chargement des données du troupeau...</div>
+} @else {
+  <div class="card-dark">
+    <div class="card-dark-header" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem;">
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        <i class="bi bi-collection text-accent"></i>
+        <span>Liste des animaux</span>
+        <span class="badge badge-accent" style="font-size:0.75rem; padding:0.2rem 0.5rem; border-radius:999px; background:rgba(46,107,69,0.15); color:#2E6B45;">
+          {{ animauxFiltres().length }} visible(s)
+        </span>
+      </div>
+
+      <!-- Barre de recherche rapide & Filtres -->
+      <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+        <div style="position:relative;">
+          <i class="bi bi-search" style="position:absolute; left:0.65rem; top:50%; transform:translateY(-50%); font-size:0.85rem; color:var(--ink-faint);"></i>
+          <input
+            type="text"
+            placeholder="Rechercher nom, race, capteur..."
+            [value]="recherche()"
+            (input)="recherche.set($any($event.target).value)"
+            style="padding:0.4rem 0.75rem 0.4rem 2rem; font-size:0.85rem; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--ink); width:200px;"
+          />
+        </div>
+
+        <div style="display:flex; gap:0.3rem;">
+          <button
+            class="filtre-btn"
+            style="padding:0.35rem 0.65rem; font-size:0.75rem; border-radius:6px; border:1px solid var(--border); background:var(--surface); cursor:pointer;"
+            [style.background]="filtreSante() === 'TOUS' ? '#2E6B45' : 'transparent'"
+            [style.color]="filtreSante() === 'TOUS' ? '#FFF' : 'var(--ink-soft)'"
+            (click)="filtreSante.set('TOUS')">Tous</button>
+          <button
+            class="filtre-btn"
+            style="padding:0.35rem 0.65rem; font-size:0.75rem; border-radius:6px; border:1px solid var(--border); background:var(--surface); cursor:pointer;"
+            [style.background]="filtreSante() === 'BON' ? '#2E6B45' : 'transparent'"
+            [style.color]="filtreSante() === 'BON' ? '#FFF' : 'var(--ink-soft)'"
+            (click)="filtreSante.set('BON')">Sains</button>
+          <button
+            class="filtre-btn"
+            style="padding:0.35rem 0.65rem; font-size:0.75rem; border-radius:6px; border:1px solid var(--border); background:var(--surface); cursor:pointer;"
+            [style.background]="filtreSante() === 'MALADE' ? '#A8502D' : 'transparent'"
+            [style.color]="filtreSante() === 'MALADE' ? '#FFF' : 'var(--ink-soft)'"
+            (click)="filtreSante.set('MALADE')">Malades</button>
+          <button
+            class="filtre-btn"
+            style="padding:0.35rem 0.65rem; font-size:0.75rem; border-radius:6px; border:1px solid var(--border); background:var(--surface); cursor:pointer;"
+            [style.background]="filtreSante() === 'CRITIQUE' ? '#7A2E1A' : 'transparent'"
+            [style.color]="filtreSante() === 'CRITIQUE' ? '#FFF' : 'var(--ink-soft)'"
+            (click)="filtreSante.set('CRITIQUE')">Critiques</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table-dark-custom">
+        <thead>
+          <tr>
+            <th>Nom</th><th>Race</th><th>Sexe</th><th>Poids</th><th>Naissance</th><th>N° Capteur</th><th>Bergerie</th><th>Santé</th>
+            @if (estEleveur) { <th>Actions</th> }
+          </tr>
+        </thead>
+        <tbody>
+          @if (!animauxFiltres().length) {
+            <tr>
+              <td [attr.colspan]="estEleveur ? 9 : 8" style="text-align:center; padding:2rem; color:var(--text-muted)">
+                <i class="bi bi-search" style="font-size:1.5rem; display:block; margin-bottom:0.5rem; opacity:0.5;"></i>
+                Aucun animal ne correspond à la recherche ou au filtre sélectionné.
+              </td>
+            </tr>
+          }
+          @for (a of animauxFiltres(); track a.id) {
+            <tr>
+              <td><strong>{{ a.nom }}</strong></td>
+              <td>{{ a.race }}</td>
+              <td>
+                <span style="display:inline-flex; align-items:center; gap:0.25rem;">
+                  <i class="bi" [class.bi-gender-female]="a.sexe === 'F'" [class.bi-gender-male]="a.sexe === 'M'" [style.color]="a.sexe === 'F' ? '#EC4899' : '#3B82F6'"></i>
+                  {{ a.sexe === 'F' ? 'Femelle' : 'Mâle' }}
+                </span>
+              </td>
+              <td>{{ a.poids ? (a.poids + ' kg') : '—' }}</td>
+              <td>{{ a.dateNaissance ? (a.dateNaissance | date: 'dd/MM/yyyy') : '—' }}</td>
+              <td><code>{{ a.numeroCapteur || '—' }}</code></td>
+              <td>{{ a.bergerieNom || '—' }}</td>
+              <td><span class="badge-sante" [class]="classeSante(a.statutSante)">{{ a.statutSante }}</span></td>
+              @if (estEleveur) {
+                <td class="actions-cell">
+                  <button class="icon-act" (click)="ouvrirEdition(a)" title="Modifier cet animal"><i class="bi bi-pencil"></i></button>
+                  <button class="icon-act danger" (click)="supprimer(a)" title="Supprimer"><i class="bi bi-trash"></i></button>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

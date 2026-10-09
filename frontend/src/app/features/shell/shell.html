@@ -1,0 +1,151 @@
+<!-- Topbar de navigation -->
+<nav class="topbar">
+  <div class="topbar-left">
+    <button
+      class="icon-btn burger-btn"
+      (click)="toggleSidebar()"
+      [attr.aria-expanded]="mobileOpen() || !collapsed()"
+      aria-label="Basculer le menu"
+      title="Menu principal">
+      <i class="bi" [class.bi-x-lg]="mobileOpen()" [class.bi-list]="!mobileOpen()"></i>
+    </button>
+    <div class="brand">
+      <span class="brand-icon-wrap">
+        <img src="images/logo-bergerie.png" alt="DIOURGUI" class="brand-logo-img" />
+      </span>
+      <div class="brand-text">
+        <span class="brand-title">DIOURGUI</span>
+        <span class="brand-sub">Gestion Intelligente</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <!-- Rôle de l'utilisateur actif -->
+    <span class="topbar-role-badge" [class]="roleColorClass">
+      <i class="bi" [class]="brandIcon"></i>
+      <span class="role-text">{{ roleLabel }}</span>
+    </span>
+
+    <!-- Cloche d'alertes avec compteur en direct -->
+    <a routerLink="/alertes" class="icon-btn icon-btn-bell" aria-label="Alertes" title="Alertes sanitaires">
+      <i class="bi bi-bell-fill"></i>
+      @if (alertesNonLues() > 0) {
+        <span class="bell-badge" aria-label="Alertes non lues">{{ alertesNonLues() }}</span>
+      }
+    </a>
+
+    <!-- Profil & Déconnexion -->
+    <div class="user-chip">
+      <span class="user-avatar" [class]="roleColorClass">
+        {{ (authService.currentUser()?.prenom || '?').charAt(0) }}
+      </span>
+      <div class="user-info-text">
+        <span class="user-name">{{ authService.currentUser()?.prenom }} {{ authService.currentUser()?.nom }}</span>
+      </div>
+      <button class="logout-btn" (click)="logout()" title="Se déconnecter" aria-label="Déconnexion">
+        <i class="bi bi-box-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Arrière-plan flouté pour mobile (Offcanvas Backdrop) -->
+<div
+  class="sidebar-backdrop"
+  [class.show]="mobileOpen()"
+  (click)="closeMobileSidebar()"
+  aria-hidden="true">
+</div>
+
+<div class="layout-wrapper">
+  <!-- Barre latérale / Tiroir mobile -->
+  <aside class="sidebar" [class.collapsed]="collapsed()" [class.mobile-open]="mobileOpen()">
+    
+    <!-- En-tête du menu mobile -->
+    <div class="sidebar-mobile-header">
+      <div class="smh-brand">
+        <i class="bi" [class]="brandIcon"></i>
+        <span>Menu DIOURGUI</span>
+      </div>
+      <button class="icon-btn-close" (click)="closeMobileSidebar()" aria-label="Fermer le menu">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Carte du profil & statut dans la barre latérale -->
+    <div class="sidebar-role-card" [class]="roleColorClass">
+      <div class="src-icon">
+        <i class="bi" [class]="brandIcon"></i>
+      </div>
+      <div class="src-info">
+        <span class="src-role">{{ roleLabel }}</span>
+        <span class="src-user">{{ authService.currentUser()?.prenom }} {{ authService.currentUser()?.nom }}</span>
+      </div>
+    </div>
+
+    <!-- Action rapide contextuelle (si applicable) -->
+    @if (quickAction; as qa) {
+      <div class="sidebar-quick-action">
+        <a
+          [routerLink]="qa.path"
+          [queryParams]="qa.queryParams"
+          class="quick-action-link"
+          (click)="closeMobileSidebar()">
+          <i class="bi" [class]="qa.icon"></i>
+          <span>{{ qa.label }}</span>
+        </a>
+      </div>
+    }
+
+    <!-- Liste des sections fonctionnelles par rôle -->
+    <div class="sidebar-scrollable">
+      @for (section of navSections; track section.title) {
+        <div class="sidebar-section">
+          <div class="sidebar-label">{{ section.title }}</div>
+          @for (item of section.items; track item.label + item.path) {
+            <a
+              [routerLink]="item.path"
+              [queryParams]="item.queryParams"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="item.queryParams ? { exact: false, paths: 'exact', queryParams: 'exact', matrixParams: 'ignored', fragment: 'ignored' } : { exact: item.path === '/dashboard/eleveur' || item.path === '/dashboard/veterinaire' }"
+              class="sidebar-link"
+              (click)="closeMobileSidebar()">
+              
+              <div class="link-icon-wrap">
+                <i class="bi" [class]="item.icon"></i>
+              </div>
+
+              <div class="link-text-wrap">
+                <span class="link-title">{{ item.label }}</span>
+                @if (item.description) {
+                  <span class="link-desc">{{ item.description }}</span>
+                }
+              </div>
+
+              @if (item.badge && item.badge() !== null) {
+                <span class="link-badge" [class]="item.badgeClass || 'badge-pill-accent'">
+                  {{ item.badge() }}
+                </span>
+              }
+            </a>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Pied de barre latérale -->
+    <div class="sidebar-foot">
+      <div class="system-status">
+        <span class="pulse-dot"></span>
+        <span class="status-text">Système en ligne</span>
+      </div>
+      <span class="version-tag">DIOURGUI v2.4</span>
+    </div>
+  </aside>
+
+  <!-- Contenu principal -->
+  <main class="main-content" [class.expanded]="collapsed()">
+    <router-outlet></router-outlet>
+  </main>
+</div>

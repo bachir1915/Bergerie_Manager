@@ -1,0 +1,50 @@
+.form-card { margin-bottom: 1.5rem; }
+
+.grid-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.9rem 1rem;
+  padding-top: 0.5rem;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  input, select { width: 100%; }
+}
+
+.form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.3rem;
+}
+
+.btn-cancel {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--ink-soft);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  &:hover { color: var(--ink); border-color: var(--ink-soft); }
+}
+
+.actions-cell { white-space: nowrap; }
+
+.icon-act {
+  background: var(--surface-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.5rem;
+  margin-left: 0.3rem;
+  cursor: pointer;
+  color: var(--ink-soft);
+  &:hover { color: var(--forest); }
+  &.danger:hover { color: var(--clay); }
+}

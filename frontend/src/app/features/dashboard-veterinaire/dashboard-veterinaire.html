@@ -1,0 +1,151 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Espace Vétérinaire</h1>
+    <p class="page-subtitle">Dr. {{ authService.currentUser()?.prenom }} {{ authService.currentUser()?.nom }}</p>
+  </div>
+</div>
+
+@if (erreur()) {
+  <div class="alert-error">{{ erreur() }}</div>
+}
+
+@if (loading()) {
+  <div class="card-dark">Chargement...</div>
+} @else if (data(); as d) {
+
+  <!-- Bergerie -->
+  <div class="card-dark">
+    <div class="card-dark-header">
+      <i class="bi bi-house text-accent"></i> {{ d.bergerie.nom }}
+      <code class="code-berg spacer">{{ d.bergerie.code }}</code>
+    </div>
+    <div class="berg-grid">
+      <div><span>Région</span>{{ d.bergerie.region || '—' }}</div>
+      <div><span>Adresse</span>{{ d.bergerie.adresse || '—' }}</div>
+      <div><span>Superficie</span>{{ d.bergerie.superficieTotale ? (d.bergerie.superficieTotale + ' m²') : '—' }}</div>
+      <div><span>Éleveur</span>{{ d.bergerie.eleveurNomComplet || '—' }}</div>
+      <div><span>Téléphone éleveur</span>{{ d.bergerie.eleveurTelephone || '—' }}</div>
+      <div><span>Email éleveur</span>{{ d.bergerie.eleveurEmail || '—' }}</div>
+      <div><span>Zones</span>{{ d.bergerie.zones.length ? d.bergerie.zones.join(', ') : '—' }}</div>
+    </div>
+    <div class="switch-berg">
+      <input #codeInput placeholder="Consulter une autre bergerie (AA-76-VI-77)" />
+      <button class="btn-mini" (click)="changerBergerie(codeInput.value)">Changer</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat"><div class="v">{{ d.totalAnimaux }}</div><div class="l">Animaux</div></div>
+    <div class="stat"><div class="v warn">{{ d.animauxMalades }}</div><div class="l">Malades</div></div>
+    <div class="stat"><div class="v crit">{{ d.animauxCritiques }}</div><div class="l">Critiques</div></div>
+    <div class="stat"><div class="v">{{ d.alertes.length }}</div><div class="l">Alertes</div></div>
+    <div class="stat"><div class="v">{{ d.derniersActes.length }}</div><div class="l">Actes médicaux</div></div>
+  </div>
+
+  <!-- Historique médical -->
+  <div class="card-dark">
+    <div class="card-dark-header">
+      <i class="bi bi-clipboard-pulse text-accent"></i> Historique médical
+      <button class="btn-mini spacer" (click)="ouvrirActeForm()"><i class="bi bi-plus-lg"></i> Nouvel acte médical</button>
+    </div>
+
+    @if (acteFormOuvert()) {
+      <form [formGroup]="acteForm" (ngSubmit)="enregistrerActe()" class="acte-form">
+        @if (acteErreur()) { <div class="alert-error" style="grid-column:1/-1">{{ acteErreur() }}</div> }
+        <label>Animal
+          <select formControlName="animalId">
+            <option [ngValue]="null">— choisir —</option>
+            @for (an of d.animaux; track an.id) { <option [ngValue]="an.id">{{ an.nom }} ({{ an.race }})</option> }
+          </select>
+        </label>
+        <label>Type de soin
+          <select formControlName="typeSoin">
+            @for (t of typesSoin; track t) { <option [value]="t">{{ t }}</option> }
+          </select>
+        </label>
+        <label>Date <input type="date" formControlName="dateSoin" /></label>
+        <label>Prochain rappel <input type="date" formControlName="prochainRappel" /></label>
+        <label>Médicament <input formControlName="medicament" /></label>
+        <label>Dose <input formControlName="dose" placeholder="ex : 10 mg/kg" /></label>
+        <label style="grid-column:1/-1">Description <textarea rows="2" formControlName="description"></textarea></label>
+        <div class="acte-actions">
+          <button type="submit" class="btn-mini">Enregistrer</button>
+          <button type="button" class="btn-plain" (click)="acteFormOuvert.set(false)">Annuler</button>
+        </div>
+      </form>
+    }
+
+    <div class="table-responsive">
+      <table class="tbl">
+        <thead><tr><th>Date</th><th>Animal</th><th>Type</th><th>Description</th><th>Médicament / dose</th><th>Prochain rappel</th></tr></thead>
+        <tbody>
+          @if (!d.derniersActes.length) {
+            <tr><td colspan="6" class="muted">Aucun acte médical enregistré</td></tr>
+          }
+          @for (a of d.derniersActes; track a.id) {
+            <tr>
+              <td>{{ a.dateSoin | date: 'dd/MM/yyyy' }}</td>
+              <td>{{ a.animalNom || '—' }}</td>
+              <td><span class="tag">{{ a.typeSoin }}</span></td>
+              <td>{{ a.description || '—' }}</td>
+              <td>{{ a.medicament ? (a.medicament + (a.dose ? ' — ' + a.dose : '')) : '—' }}</td>
+              <td>{{ a.prochainRappel ? (a.prochainRappel | date: 'dd/MM/yyyy') : '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Animaux -->
+  <div class="card-dark">
+    <div class="card-dark-header"><i class="bi bi-collection text-accent"></i> Cheptel</div>
+    <div class="table-responsive">
+      <table class="tbl">
+        <thead><tr><th>Nom</th><th>Race</th><th>Sexe</th><th>Poids</th><th>Naissance</th><th>Capteur</th><th>Santé</th></tr></thead>
+        <tbody>
+          @if (!d.animaux.length) {
+            <tr><td colspan="7" class="muted">Aucun animal</td></tr>
+          }
+          @for (an of d.animaux; track an.id) {
+            <tr>
+              <td>{{ an.nom }}</td>
+              <td>{{ an.race }}</td>
+              <td>{{ an.sexe }}</td>
+              <td>{{ an.poids ? (an.poids + ' kg') : '—' }}</td>
+              <td>{{ an.dateNaissance ? (an.dateNaissance | date: 'dd/MM/yyyy') : '—' }}</td>
+              <td>{{ an.numeroCapteur || '—' }}</td>
+              <td><span [class]="badgeSante(an.statutSante)">{{ an.statutSante }}</span></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Alertes -->
+  <div class="card-dark">
+    <div class="card-dark-header"><i class="bi bi-heart-pulse" style="color:#f87171"></i> Alertes de la bergerie</div>
+    <div class="table-responsive">
+      <table class="tbl">
+        <thead><tr><th>Date</th><th>Animal</th><th>Type</th><th>Niveau</th><th>Message</th><th>Statut</th></tr></thead>
+        <tbody>
+          @if (!d.alertes.length) {
+            <tr><td colspan="6" class="muted">Aucune alerte</td></tr>
+          }
+          @for (al of d.alertes; track al.id) {
+            <tr>
+              <td>{{ al.dateHeure | date: 'dd/MM HH:mm' }}</td>
+              <td>{{ al.animalNom || '—' }}</td>
+              <td>{{ al.type }}</td>
+              <td>{{ al.niveau }}</td>
+              <td>{{ al.message }}</td>
+              <td>{{ al.statutAlerte }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

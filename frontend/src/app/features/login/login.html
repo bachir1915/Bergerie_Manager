@@ -1,0 +1,45 @@
+<div class="login-page">
+  <div class="login-form">
+    <div class="brand">
+      <div class="logo">
+        <img src="images/logo-bergerie.png" alt="DIOURGUI" class="brand-logo-img" />
+      </div>
+      <span class="name">DIOURGUI</span>
+    </div>
+
+    <h3>Connexion</h3>
+    <p class="sub">Saisissez votre email et votre code d'accès.</p>
+
+    @if (error()) {
+      <div class="alert-flash alert-flash-danger">
+        <i class="bi bi-exclamation-triangle-fill"></i> {{ error() }}
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="field">
+        <label>Adresse email</label>
+        <div class="input">
+          <i class="bi bi-envelope"></i>
+          <input type="email" formControlName="email" placeholder="email@bergerie.com" autofocus />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Code d'accès</label>
+        <div class="input">
+          <i class="bi bi-key"></i>
+          <input formControlName="code" placeholder="Saisissez votre code d'accès" />
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit" [disabled]="loading()">
+        {{ loading() ? 'Connexion...' : 'Se connecter' }}
+        <i class="bi bi-arrow-right"></i>
+      </button>
+    </form>
+
+    <p class="bas">Pas encore de compte ? <a routerLink="/inscription">Créer un compte</a></p>
+    <p class="back-home"><a routerLink="/"><i class="bi bi-arrow-left"></i> Découvrir la plateforme</a></p>
+  </div>
+</div>

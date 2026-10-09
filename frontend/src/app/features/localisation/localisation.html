@@ -1,0 +1,113 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">
+      <i class="bi bi-geo-alt-fill text-accent me-2"></i>Carte GPS du Troupeau
+    </h1>
+    <p class="page-subtitle">
+      Localisation et déplacements en direct —
+      <strong>Parcelles Assainies, Dakar</strong>
+      <span class="badge-count ms-2">{{ positions().length }} ovin(s) localisé(s)</span>
+    </p>
+  </div>
+  <div class="header-actions">
+    <span class="live-indicator">
+      <span class="live-dot pulse"></span>
+      <span>Direct actif</span>
+    </span>
+
+    <button class="btn-refresh" (click)="actualiser()" [disabled]="loading()" title="Actualiser les positions">
+      <i class="bi bi-arrow-clockwise" [class.spin]="loading()"></i>
+      <span>Actualiser</span>
+    </button>
+  </div>
+</div>
+
+@if (erreur()) {
+  <div class="error-banner">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <span>{{ erreur() }}</span>
+  </div>
+}
+
+<!-- Légende épurée -->
+<div class="map-legend">
+  <span class="legend-title">État de santé :</span>
+  <span class="legend-item"><span class="legend-dot" style="background:#10b981"></span>Sain</span>
+  <span class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>En observation</span>
+  <span class="legend-item"><span class="legend-dot" style="background:#ef4444"></span>Malade</span>
+  <span class="legend-item"><span class="legend-dot" style="background:#7f1d1d"></span>Critique</span>
+  <span class="legend-sep">|</span>
+  <span class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span>Enclos / Bercail</span>
+</div>
+
+<!-- Carte Leaflet - Centrée directement sur Parcelles Assainies, Dakar -->
+<div class="card-dark map-card" style="position:relative; min-height:560px;">
+  @if (loading() && !positions().length) {
+    <div class="map-loading" style="position:absolute;top:0;left:0;right:0;bottom:0;z-index:10;background:var(--surface);">
+      <div class="map-loader"></div>
+      <span>Connexion au serveur GPS...</span>
+    </div>
+  }
+  <div id="leaflet-map" class="leaflet-map-container"></div>
+</div>
+
+<!-- Tableau récapitulatif du troupeau -->
+@if (positions().length) {
+  <div class="card-dark" style="margin-top:1.5rem">
+    <div class="card-dark-header d-flex justify-content-between align-items-center">
+      <div>
+        <i class="bi bi-table text-accent me-2"></i>
+        <span>Positions actuelles — Troupeau Parcelles Assainies</span>
+      </div>
+      <small class="text-muted">Cliquez sur un animal pour le centrer sur la carte</small>
+    </div>
+    <div class="table-responsive">
+      <table class="table-dark-custom">
+        <thead>
+          <tr>
+            <th>Animal</th>
+            <th>Race</th>
+            <th>Santé</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th>Vitesse</th>
+            <th>Dernière mise à jour</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of positions(); track p.id) {
+            <tr
+              (click)="centrerSurAnimal(p)"
+              style="cursor:pointer"
+              title="Cliquer pour centrer sur la carte"
+            >
+              <td>
+                <strong>🐑 {{ p.animalNom }}</strong>
+              </td>
+              <td>{{ p.animalRace }}</td>
+              <td>
+                <span class="badge-sante" [class]="classeSante(p.animalStatutSante)">
+                  {{ p.animalStatutSante }}
+                </span>
+              </td>
+              <td><code>{{ p.latitude | number: '1.5-5' }}</code></td>
+              <td><code>{{ p.longitude | number: '1.5-5' }}</code></td>
+              <td>{{ p.vitesse != null ? (p.vitesse | number: '1.1-1') + ' km/h' : '0.0 km/h' }}</td>
+              <td>{{ p.dateHeure | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+              <td>
+                <button
+                  class="btn-table-track"
+                  (click)="$event.stopPropagation(); centrerSurAnimal(p)"
+                  title="Centrer la carte"
+                >
+                  <i class="bi bi-geo-alt-fill"></i>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

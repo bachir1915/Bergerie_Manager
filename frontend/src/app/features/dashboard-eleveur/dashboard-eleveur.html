@@ -1,0 +1,120 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Tableau de Bord</h1>
+    <p class="page-subtitle">
+      Bienvenue, <strong>{{ authService.currentUser()?.prenom }}</strong>
+    </p>
+  </div>
+  <a routerLink="/animaux" class="btn-primary-custom">
+    <i class="bi bi-plus-lg"></i> Ajouter un animal
+  </a>
+</div>
+
+@if (loading()) {
+  <div class="card-dark">Chargement...</div>
+} @else if (data(); as d) {
+  <div class="stats-grid">
+    <div class="stat-card stat-card-blue">
+      <div class="stat-icon"><i class="bi bi-collection"></i></div>
+      <div class="stat-value">{{ d.totalAnimaux }}</div>
+      <div class="stat-label">Total Animaux</div>
+    </div>
+    <div class="stat-card stat-card-green">
+      <div class="stat-icon"><i class="bi bi-heart-fill"></i></div>
+      <div class="stat-value">{{ d.animauxSains }}</div>
+      <div class="stat-label">Animaux Sains</div>
+    </div>
+    <div class="stat-card stat-card-orange">
+      <div class="stat-icon"><i class="bi bi-thermometer-high"></i></div>
+      <div class="stat-value">{{ d.animauxMalades }}</div>
+      <div class="stat-label">Animaux Malades</div>
+    </div>
+    <div class="stat-card stat-card-red">
+      <div class="stat-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+      <div class="stat-value">{{ d.animauxCritiques }}</div>
+      <div class="stat-label">Critiques</div>
+    </div>
+    <div class="stat-card stat-card-purple">
+      <div class="stat-icon"><i class="bi bi-bell-fill"></i></div>
+      <div class="stat-value">{{ d.alertesNonLues }}</div>
+      <div class="stat-label">Alertes Non Lues</div>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="card-dark">
+      <div class="card-dark-header">
+        <i class="bi bi-pie-chart-fill text-accent"></i> État de Santé du Troupeau
+      </div>
+      <div class="chart-container">
+        <canvas #santeCanvas></canvas>
+      </div>
+    </div>
+
+    <div class="card-dark">
+      <div class="card-dark-header">
+        <i class="bi bi-bell-fill" style="color:#fbbf24"></i> Alertes Récentes
+        <a routerLink="/alertes" class="spacer text-accent" style="font-size:0.85rem">Voir tout</a>
+      </div>
+      <div class="alert-list">
+        @if (!d.dernieresAlertes.length) {
+          <div class="text-center" style="color:var(--text-muted)">Aucune alerte</div>
+        }
+        @for (alerte of d.dernieresAlertes; track alerte.id) {
+          <div class="alert-item" [class.unread]="alerte.statutAlerte === 'NON_LUE'">
+            <div class="alert-badge"
+                 [class.badge-urgence]="alerte.niveau === 'URGENCE'"
+                 [class.badge-critique]="alerte.niveau === 'CRITIQUE'"
+                 [class.badge-warning]="alerte.niveau === 'WARNING'"
+                 [class.badge-info]="alerte.niveau === 'INFO'">
+              <i class="bi bi-exclamation-circle"></i>
+            </div>
+            <div>
+              <div class="alert-type">{{ alerte.type }}</div>
+              <div class="alert-msg">{{ alerte.message }}</div>
+              <div class="alert-time">{{ alerte.dateHeure | date: 'dd/MM/yyyy HH:mm' }}</div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="card-dark">
+      <div class="card-dark-header">
+        <i class="bi bi-thermometer-half" style="color:#60a5fa"></i> Mesures Environnementales
+        <a routerLink="/donnees-env" class="spacer text-accent" style="font-size:0.85rem">Voir tout</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table-dark-custom">
+          <thead>
+            <tr><th>Zone</th><th>Temp.</th><th>Humidité</th><th>Qualité Air</th><th>Heure</th></tr>
+          </thead>
+          <tbody>
+            @if (!d.donneesMesures.length) {
+              <tr><td colspan="5" class="text-center" style="color:var(--text-muted)">Aucune mesure</td></tr>
+            }
+            @for (m of d.donneesMesures; track m.id) {
+              <tr>
+                <td>{{ m.zoneNom ?? 'N/A' }}</td>
+                <td>{{ m.temperature | number: '1.1-1' }}°C</td>
+                <td>{{ m.humidite | number: '1.1-1' }}%</td>
+                <td>{{ m.qualiteAir != null ? (m.qualiteAir | number: '1.1-1') : 'N/A' }}</td>
+                <td>{{ m.dateHeure | date: 'HH:mm' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card-dark">
+      <div class="card-dark-header"><i class="bi bi-lightning-fill text-accent"></i> Accès Rapides</div>
+      <div class="quick-actions">
+        <a routerLink="/animaux" class="quick-action-btn"><i class="bi bi-collection"></i><span>Mes Animaux</span></a>
+        <a routerLink="/veterinaires" class="quick-action-btn"><i class="bi bi-hospital"></i><span>Vétérinaires</span></a>
+        <a routerLink="/alertes" class="quick-action-btn"><i class="bi bi-bell"></i><span>Alertes</span></a>
+        <a routerLink="/donnees-env" class="quick-action-btn"><i class="bi bi-thermometer-half"></i><span>Données Env.</span></a>
+      </div>
+    </div>
+  </div>
+}

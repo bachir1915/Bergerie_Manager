@@ -1,0 +1,104 @@
+<div class="login-page">
+  <div class="login-form">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 48 48" fill="currentColor">
+          <circle cx="12" cy="29" r="8.5" />
+          <circle cx="22" cy="22" r="10.5" />
+          <circle cx="32.5" cy="27.5" r="8.5" />
+          <circle cx="19.5" cy="33.5" r="7.5" />
+          <circle cx="35.5" cy="17.5" r="6" />
+          <circle cx="31.5" cy="10.5" r="2.8" />
+        </svg>
+      </div>
+      <span class="name">DIOURGUI</span>
+    </div>
+
+    @if (succes()) {
+      <h3>Compte créé</h3>
+      @if (profil() === 'ELEVEUR' && eleveurCree(); as e) {
+        <p class="sub">Votre compte éleveur est actif. Voici votre <strong>code de connexion</strong> :</p>
+        <div class="code-box">{{ e.codeConnexion }}</div>
+        <p class="sub">Conservez-le : vous en aurez besoin (avec votre email) pour vous connecter.</p>
+      } @else {
+        <p class="sub">
+          Votre inscription a bien été enregistrée. Un administrateur va vérifier votre
+          justificatif ; vous pourrez ensuite vous connecter avec votre email et le code
+          d'une bergerie.
+        </p>
+      }
+      <button class="btn-submit" (click)="allerConnexion()">
+        Aller à la connexion <i class="bi bi-arrow-right"></i>
+      </button>
+    } @else {
+      <h3>Créer un compte</h3>
+      <p class="sub">Choisissez votre profil.</p>
+
+      <div class="profil-switch">
+        <button type="button" [class.actif]="profil() === 'ELEVEUR'" (click)="choisir('ELEVEUR')">Éleveur</button>
+        <button type="button" [class.actif]="profil() === 'VETERINAIRE'" (click)="choisir('VETERINAIRE')">Vétérinaire</button>
+      </div>
+
+      @if (error()) {
+        <div class="alert-flash alert-flash-danger">
+          <i class="bi bi-exclamation-triangle-fill"></i> {{ error() }}
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="row2">
+          <div class="field">
+            <label>Prénom</label>
+            <div class="input"><input formControlName="prenom" /></div>
+          </div>
+          <div class="field">
+            <label>Nom</label>
+            <div class="input"><input formControlName="nom" /></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Adresse email</label>
+          <div class="input">
+            <i class="bi bi-envelope"></i>
+            <input type="email" formControlName="email" placeholder="email@exemple.com" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Téléphone</label>
+          <div class="input">
+            <i class="bi bi-telephone"></i>
+            <input formControlName="telephone" placeholder="77 123 45 67" inputmode="tel" />
+          </div>
+          @if (form.get('telephone')?.touched && form.get('telephone')?.invalid) {
+            <small class="err">Format attendu : 77 123 45 67</small>
+          }
+        </div>
+
+        @if (profil() === 'ELEVEUR') {
+          <p class="note">Aucun mot de passe : un code de connexion vous sera fourni après l'inscription.</p>
+        }
+
+        @if (profil() === 'VETERINAIRE') {
+          <div class="field">
+            <label>Spécialité <span class="opt">(optionnel)</span></label>
+            <div class="input"><input formControlName="specialite" placeholder="Ruminants, chirurgie..." /></div>
+          </div>
+
+          <div class="field">
+            <label>Justificatif <span class="opt">(carte pro, attestation à l'ordre, diplôme — PDF ou image)</span></label>
+            <input type="file" accept="application/pdf,image/*" (change)="onFichier($event)" />
+          </div>
+        }
+
+        <button type="submit" class="btn-submit" [disabled]="loading()">
+          {{ loading() ? 'Envoi...' : 'Créer mon compte' }}
+          <i class="bi bi-arrow-right"></i>
+        </button>
+      </form>
+
+      <p class="bas">Déjà inscrit ? <a routerLink="/login">Se connecter</a></p>
+    }
+  </div>
+</div>

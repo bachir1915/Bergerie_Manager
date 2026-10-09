@@ -1,0 +1,213 @@
+<div class="page-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+  <div>
+    <h1 class="page-title">
+      @if (tab() === 'veterinaires') {
+        <i class="bi bi-shield-check text-accent me-2"></i>Validation Vétérinaires
+      } @else {
+        <i class="bi bi-people-fill text-accent me-2"></i>Gestion des Éleveurs
+      }
+    </h1>
+    <p class="page-subtitle">
+      @if (tab() === 'veterinaires') {
+        Vérification des diplômes, agréments et statuts des praticiens
+      } @else {
+        Répertoire des éleveurs inscrits et de leurs bergeries
+      }
+    </p>
+  </div>
+
+  <!-- Sélecteur d'onglets Admin -->
+  <div style="display:flex; gap:0.4rem; background:var(--surface); padding:0.35rem; border-radius:12px; border:1px solid var(--border); box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+    <button
+      (click)="setTab('veterinaires')"
+      style="padding:0.5rem 1.1rem; border-radius:8px; border:none; font-weight:700; font-size:0.88rem; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:0.5rem;"
+      [style.background]="tab() === 'veterinaires' ? 'var(--forest)' : 'transparent'"
+      [style.color]="tab() === 'veterinaires' ? '#FEFCF5' : 'var(--ink-soft)'">
+      <i class="bi bi-shield-check"></i> Vétérinaires
+      @if (nbEnAttente() > 0) {
+        <span style="background:#EF4444; color:#FFF; font-size:0.72rem; padding:0.15rem 0.45rem; border-radius:20px; font-weight:800;">{{ nbEnAttente() }}</span>
+      }
+    </button>
+    <button
+      (click)="setTab('eleveurs')"
+      style="padding:0.5rem 1.1rem; border-radius:8px; border:none; font-weight:700; font-size:0.88rem; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:0.5rem;"
+      [style.background]="tab() === 'eleveurs' ? 'var(--forest)' : 'transparent'"
+      [style.color]="tab() === 'eleveurs' ? '#FEFCF5' : 'var(--ink-soft)'">
+      <i class="bi bi-person-badge-fill"></i> Éleveurs
+      <span style="background:var(--surface-2); color:var(--ink-soft); font-size:0.72rem; padding:0.15rem 0.45rem; border-radius:20px;">{{ eleveurs().length }}</span>
+    </button>
+  </div>
+</div>
+
+@if (erreur()) {
+  <div class="alert-error">{{ erreur() }}</div>
+}
+
+<!-- ============ Onglet VÉTÉRINAIRES ============ -->
+@if (tab() === 'veterinaires') {
+  <div class="card-dark">
+    <div class="card-dark-header">
+      <i class="bi bi-hospital text-accent"></i> Comptes Vétérinaires
+      @if (nbEnAttente() > 0) {
+        <span class="badge badge-warning spacer">{{ nbEnAttente() }} en attente</span>
+      }
+    </div>
+
+    <div class="filtres">
+      @for (f of filtres; track f.valeur) {
+        <button
+          class="filtre-btn"
+          [class.actif]="filtre() === f.valeur"
+          (click)="changerFiltre(f.valeur)">
+          {{ f.libelle }}
+        </button>
+      }
+    </div>
+
+    <div class="table-responsive">
+      <table class="table-dark-custom vet-table">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Email</th>
+            <th>Téléphone</th>
+            <th>Spécialité</th>
+            <th>Inscrit le</th>
+            <th>Justificatif</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (!veterinaires().length) {
+            <tr><td colspan="8" class="text-center" style="color:var(--text-muted)">Aucun vétérinaire dans cette catégorie</td></tr>
+          }
+          @for (v of veterinaires(); track v.id) {
+            <tr>
+              <td><strong>{{ v.prenom }} {{ v.nom }}</strong></td>
+              <td>{{ v.email }}</td>
+              <td>{{ v.telephone }}</td>
+              <td>{{ v.specialite || '—' }}</td>
+              <td>{{ v.dateCreation | date: 'dd/MM/yyyy' }}</td>
+              <td>
+                @if (v.justificatifPresent) {
+                  <button class="lien-justif" (click)="ouvrirJustificatif(v)">
+                    <i class="bi bi-file-earmark-text"></i> Voir
+                  </button>
+                } @else {
+                  <span style="color:var(--text-muted)">Aucun</span>
+                }
+              </td>
+              <td>
+                <span [class]="badgeClass(v.statutValidation)">{{ v.statutValidation }}</span>
+                @if (v.motifSuspension) {
+                  <div class="motif" title="{{ v.motifSuspension }}">{{ v.motifSuspension }}</div>
+                }
+              </td>
+              <td>
+                <div class="actions">
+                  @if (v.statutValidation === 'EN_ATTENTE') {
+                    <button class="btn-mini btn-ok" (click)="valider(v)">Valider</button>
+                    <button class="btn-mini btn-no" (click)="rejeter(v)">Rejeter</button>
+                  }
+                  @if (v.statutValidation === 'VALIDE') {
+                    <button class="btn-mini btn-no" (click)="suspendre(v)">Suspendre</button>
+                  }
+                  @if (v.statutValidation === 'SUSPENDU') {
+                    <button class="btn-mini btn-ok" (click)="reactiver(v)">Réactiver</button>
+                  }
+                  @if (v.statutValidation === 'REJETE') {
+                    <button class="btn-mini btn-ok" (click)="valider(v)">Valider</button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}
+
+<!-- ============ Onglet ÉLEVEURS ============ -->
+@if (tab() === 'eleveurs') {
+  <!-- Éleveurs inscrits -->
+  <div class="card-dark" style="margin-bottom:1.5rem;">
+    <div class="card-dark-header">
+      <i class="bi bi-person-badge text-accent"></i> Éleveurs Inscrits
+      <span class="spacer" style="color:var(--text-muted)">{{ eleveurs().length }} compte(s)</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table-dark-custom">
+        <thead>
+          <tr>
+            <th>Nom complet</th>
+            <th>Email</th>
+            <th>Téléphone</th>
+            <th>N° éleveur</th>
+            <th>Code connexion</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (!eleveurs().length) {
+            <tr><td colspan="5" class="text-center" style="color:var(--text-muted)">Aucun éleveur inscrit</td></tr>
+          }
+          @for (e of eleveurs(); track e.id) {
+            <tr>
+              <td><strong>{{ e.prenom }} {{ e.nom }}</strong></td>
+              <td>{{ e.email }}</td>
+              <td>{{ e.telephone }}</td>
+              <td><span style="background:rgba(31,77,52,0.1); color:var(--forest); padding:0.2rem 0.5rem; border-radius:4px; font-weight:700;">{{ e.numEleveur }}</span></td>
+              <td><code class="code-bergerie">{{ e.codeConnexion || '—' }}</code></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Bergeries associées -->
+  <div class="card-dark">
+    <div class="card-dark-header">
+      <i class="bi bi-house text-accent"></i> Bergeries Enregistrées
+      <span class="spacer" style="color:var(--text-muted)">{{ bergeries().length }} exploitation(s)</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table-dark-custom">
+        <thead>
+          <tr>
+            <th>Code bergerie</th>
+            <th>Nom bergerie</th>
+            <th>Région</th>
+            <th>Adresse</th>
+            <th>Superficie</th>
+            <th>Éleveur exploitant</th>
+            <th>Téléphone</th>
+            <th>Zones</th>
+            <th>Animaux</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (!bergeries().length) {
+            <tr><td colspan="9" class="text-center" style="color:var(--text-muted)">Aucune bergerie</td></tr>
+          }
+          @for (b of bergeries(); track b.id) {
+            <tr>
+              <td><code class="code-bergerie">{{ b.code || '—' }}</code></td>
+              <td><strong>{{ b.nom }}</strong></td>
+              <td>{{ b.region || '—' }}</td>
+              <td>{{ b.adresse || '—' }}</td>
+              <td>{{ b.superficieTotale ? (b.superficieTotale + ' m²') : '—' }}</td>
+              <td>{{ b.eleveurNomComplet || '—' }}</td>
+              <td>{{ b.eleveurTelephone || '—' }}</td>
+              <td><span style="font-weight:600;">{{ b.nombreZones }}</span></td>
+              <td><span style="font-weight:700; color:var(--forest);">{{ b.nombreAnimaux }}</span></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

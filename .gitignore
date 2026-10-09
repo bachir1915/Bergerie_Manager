@@ -1,0 +1,36 @@
+# Maven & Java
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+uploads/
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+.DS_Store
+Thumbs.db
+
+# Frontend (Angular / Node)
+frontend/node_modules/
+frontend/.angular/
+frontend/dist/
+frontend/.sass-cache/
+
+# Python / ML service
+ml-service/__pycache__/
+ml-service/*.pyc
+ml-service/.venv/
+ml-service/env/
+ml-service/venv/
+ml-service/*.log
+
+# Maven wrapper / local maven binary
+apache-maven-*/
+.claude/

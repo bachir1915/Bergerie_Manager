@@ -1,0 +1,123 @@
+.card-dark {
+  margin-bottom: 1.5rem;
+}
+
+.card-dark-header .spacer {
+  margin-left: auto;
+}
+
+.alert-error {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 1rem;
+}
+
+/* ---- Filtres statut ---- */
+.filtres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.filtre-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
+  }
+
+  &.actif {
+    background: var(--accent, #2f6b4f);
+    border-color: var(--accent, #2f6b4f);
+    color: #fff;
+  }
+}
+
+/* ---- Tables ---- */
+.table-dark-custom {
+  width: 100%;
+
+  th, td {
+    padding: 0.6rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+    font-size: 0.88rem;
+  }
+}
+
+.vet-table td {
+  white-space: nowrap;
+}
+
+.code-bergerie {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.15rem 0.4rem;
+  letter-spacing: 0.5px;
+}
+
+.motif {
+  max-width: 180px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lien-justif {
+  background: transparent;
+  border: none;
+  color: var(--accent, #4ade80);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0;
+
+  &:hover { text-decoration: underline; }
+}
+
+/* ---- Badges ---- */
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+.badge-success { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+.badge-warning { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+.badge-danger  { background: rgba(239, 68, 68, 0.15);  color: #f87171; }
+.badge-muted   { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; }
+
+/* ---- Actions ---- */
+.actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.btn-mini {
+  border: none;
+  border-radius: var(--radius-sm, 6px);
+  padding: 0.35rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-ok { background: #15803d; color: #fff; &:hover { background: #166534; } }
+.btn-no { background: #b91c1c; color: #fff; &:hover { background: #991b1b; } }
