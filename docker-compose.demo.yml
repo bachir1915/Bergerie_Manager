@@ -1,0 +1,8 @@
+# Données de démonstration (profil dev) stockées dans PostgreSQL :
+#   docker compose -f docker-compose.yml -f docker-compose.demo.yml up -d
+services:
+  backend:
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
