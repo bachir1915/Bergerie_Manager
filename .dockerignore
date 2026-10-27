@@ -1,0 +1,9 @@
+target
+.git
+.idea
+.claude
+frontend
+ml-service
+apache-maven-*
+uploads
+docs

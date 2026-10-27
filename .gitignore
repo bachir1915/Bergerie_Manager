@@ -34,3 +34,5 @@ ml-service/*.log
 # Maven wrapper / local maven binary
 apache-maven-*/
 .claude/
+
+CREDENTIALS.txt
