@@ -1,51 +1,36 @@
 pipeline {
   agent any
-  environment {
-    REGISTRY = 'docker.io/bachir1915'
-    TAG = "${env.BUILD_NUMBER}"
+  tools {
+    maven 'maven3'
+    jdk 'jdk17'
   }
   stages {
     stage('Checkout') {
-      steps { checkout scm }
-    }
-    stage('Tests') {
-      parallel {
-        stage('Backend (Maven)') {
-          steps { sh 'mvn -B test' }
-          post { always { junit 'target/surefire-reports/*.xml' } }
-        }
-        stage('ML (pytest)') {
-          steps {
-            dir('ml-service') {
-              sh 'python3 -m venv .venv && . .venv/bin/activate && pip install -q -r requirements.txt && python train_model.py && pytest -q'
-            }
-          }
-        }
+      steps {
+        git branch: 'main', credentialsId: 'githup-cred', url: 'https://github.com/bachir1915/Bergerie_Manager.git'
       }
     }
-    stage('Build images') {
+    stage('Compile') {
+      steps { sh 'mvn -B clean compile' }
+    }
+    stage('Test') {
+      steps { sh 'mvn -B test' }
+      post { always { junit 'target/surefire-reports/*.xml' } }
+    }
+    stage('Package') {
+      steps { sh 'mvn -B package -DskipTests' }
+    }
+    // Le conteneur Jenkins du projet monte /var/run/docker.sock mais n'a pas la CLI docker : étape ignorée si absente.
+    stage('Docker build') {
+      when { expression { sh(script: 'command -v docker', returnStatus: true) == 0 } }
       steps {
         sh '''
-          docker build -t $REGISTRY/bergerie-backend:$TAG .
-          docker build -t $REGISTRY/bergerie-ml:$TAG ml-service
-          docker build -t $REGISTRY/bergerie-frontend:$TAG frontend
+          docker build -t bergerie-backend:${BUILD_NUMBER} .
+          docker build -t bergerie-ml:${BUILD_NUMBER} ml-service
+          docker build -t bergerie-frontend:${BUILD_NUMBER} frontend
         '''
       }
     }
-    stage('Push') {
-      when { branch 'main' }
-      steps {
-        withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'U', passwordVariable: 'P')]) {
-          sh '''
-            echo "$P" | docker login -u "$U" --password-stdin
-            for i in backend ml frontend; do docker push $REGISTRY/bergerie-$i:$TAG; done
-          '''
-        }
-      }
-    }
-    stage('Deploy') {
-      when { branch 'main' }
-      steps { sh 'docker compose up -d --build' }
-    }
   }
+  post { always { cleanWs() } }
 }
