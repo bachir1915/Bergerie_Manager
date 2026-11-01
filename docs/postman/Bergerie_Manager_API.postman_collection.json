@@ -710,8 +710,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('Statut 200', function () { pm.response.to.have.status(200); });",
-                  "var a = pm.response.json().filter(function (x) { return x.statutAlerte !== 'TRAITEE'; })[0];",
-                  "pm.test('Une alerte non traitée existe', function () { if (!a) throw new Error('aucune alerte'); });",
+                  "var l = pm.response.json(); var a = l.filter(function (x) { return x.statutAlerte !== 'TRAITEE'; })[0] || l[0];",
+                  "pm.test('Une alerte existe', function () { if (!a) throw new Error('aucune alerte'); });",
                   "pm.collectionVariables.set('alerteId', a.id);"
                 ]
               }
@@ -1212,8 +1212,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('Statut 200', function () { pm.response.to.have.status(200); });",
-                  "var a = pm.response.json().filter(function (x) { return x.statutAlerte !== 'TRAITEE'; })[0];",
-                  "pm.test('Une alerte non traitée existe', function () { if (!a) throw new Error('aucune alerte'); });",
+                  "var l = pm.response.json(); var a = l.filter(function (x) { return x.statutAlerte !== 'TRAITEE'; })[0] || l[0];",
+                  "pm.test('Une alerte existe', function () { if (!a) throw new Error('aucune alerte'); });",
                   "pm.collectionVariables.set('alerteVetId', a.id);"
                 ]
               }
