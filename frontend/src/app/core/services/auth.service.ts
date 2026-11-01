@@ -50,6 +50,14 @@ export class AuthService {
     this.currentUserSignal.set(null);
   }
 
+  // Session expirée côté serveur (ex. redémarrage du backend) : on oublie l'utilisateur local.
+  expireSession(): void {
+    localStorage.removeItem(USER_KEY);
+    localStorage.removeItem(DEMO_KEY);
+    this.isDemoSignal.set(false);
+    this.currentUserSignal.set(null);
+  }
+
   private readStoredUser(): UserInfo | null {
     const raw = localStorage.getItem(USER_KEY);
     if (!raw) return null;
