@@ -538,3 +538,89 @@ body {
     margin-bottom: 0.4rem;
   }
 }
+
+/* =====================================================================================
+   Animations (inspirées de openumeric.com) : apparition au défilement (fadeInUp / Down / Left / Right),
+   survols à balayage et à soulèvement, barre de chargement en haut, transitions entre écrans.
+   Désactivées si le visiteur demande « réduire les animations ».
+   ===================================================================================== */
+:root { --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1); }
+html { scroll-behavior: smooth; }
+
+/* Barre de progression (changement d'écran) */
+.route-progress {
+  position: fixed; top: 0; left: 0; height: 3px; width: 0; z-index: 3000; pointer-events: none;
+  background: linear-gradient(90deg, var(--forest), var(--gold));
+  box-shadow: 0 0 10px rgba(169, 122, 34, 0.55);
+  opacity: 0; transition: width 0.2s ease-out, opacity 0.3s ease;
+  &.actif { opacity: 1; }
+}
+
+/* Apparition au défilement (directive appReveal) */
+.reveal { opacity: 0; }
+.reveal.reveal-in {
+  opacity: 1;
+  animation: reveal-up 0.85s var(--ease-out) backwards;
+  &[data-reveal='down'] { animation-name: reveal-down; }
+  &[data-reveal='left'] { animation-name: reveal-left; }
+  &[data-reveal='right'] { animation-name: reveal-right; }
+  &[data-reveal='zoom'] { animation-name: reveal-zoom; }
+}
+/* décalage progressif entre blocs frères */
+.reveal.reveal-in:nth-child(2) { animation-delay: 0.12s; }
+.reveal.reveal-in:nth-child(3) { animation-delay: 0.24s; }
+.reveal.reveal-in:nth-child(4) { animation-delay: 0.36s; }
+.reveal.reveal-in:nth-child(5) { animation-delay: 0.48s; }
+@keyframes reveal-up { from { opacity: 0; transform: translateY(42px); } }
+@keyframes reveal-down { from { opacity: 0; transform: translateY(-42px); } }
+@keyframes reveal-left { from { opacity: 0; transform: translateX(-56px); } }
+@keyframes reveal-right { from { opacity: 0; transform: translateX(56px); } }
+@keyframes reveal-zoom { from { opacity: 0; transform: scale(0.92); } }
+
+/* Survols : soulèvement, balayage de couleur, icône qui rebondit */
+.fx-lift {
+  transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out);
+  &:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -16px rgba(18, 48, 31, 0.3); }
+}
+.fx-sweep {
+  position: relative; overflow: hidden; z-index: 0;
+  &::before {
+    content: ''; position: absolute; inset: 0; z-index: -1; background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-101%); transition: transform 0.5s var(--ease-out);
+  }
+  &:hover::before { transform: translateX(0); }
+}
+.fx-icon-up:hover i, .fx-icon-up:hover .bi { animation: icon-up 0.55s ease; display: inline-block; }
+@keyframes icon-up { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-6px); } 70% { transform: translateY(1px); } }
+
+/* Application connectée : entrée des écrans, des cartes et des lignes de tableau */
+.main-content > *:not(router-outlet) { animation: page-in 0.5s var(--ease-out) backwards; }
+@keyframes page-in { from { opacity: 0; transform: translateY(14px); } }
+.stats-grid > .stat-card { animation: reveal-up 0.6s var(--ease-out) backwards; }
+.stats-grid > .stat-card:nth-child(2) { animation-delay: 0.07s; }
+.stats-grid > .stat-card:nth-child(3) { animation-delay: 0.14s; }
+.stats-grid > .stat-card:nth-child(4) { animation-delay: 0.21s; }
+.stats-grid > .stat-card:nth-child(5) { animation-delay: 0.28s; }
+.stat-card, .card-dark { transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out); }
+.stat-card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px -14px rgba(18, 48, 31, 0.28); }
+.dashboard-grid > .card-dark { animation: reveal-up 0.65s var(--ease-out) backwards; }
+.dashboard-grid > .card-dark:nth-child(2) { animation-delay: 0.12s; }
+tbody tr { animation: row-in 0.45s var(--ease-out) backwards; }
+tbody tr:nth-child(2) { animation-delay: 0.05s; }
+tbody tr:nth-child(3) { animation-delay: 0.1s; }
+tbody tr:nth-child(4) { animation-delay: 0.15s; }
+tbody tr:nth-child(5) { animation-delay: 0.2s; }
+@keyframes row-in { from { opacity: 0; transform: translateX(-14px); } }
+.sidebar .sidebar-link { transition: transform 0.25s var(--ease-out), background 0.25s ease; }
+.sidebar .sidebar-link:hover { transform: translateX(4px); }
+.bell-badge { animation: badge-pulse 2.4s ease-in-out infinite; }
+@keyframes badge-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.14); } }
+
+@keyframes reveal-fade { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  /* apparitions en fondu seulement (sans déplacement), et plus de mouvements en boucle */
+  .reveal.reveal-in { animation-name: reveal-fade !important; animation-duration: 0.7s !important; }
+  .main-content > *:not(router-outlet), .stats-grid > .stat-card, .dashboard-grid > .card-dark, tbody tr { animation-name: reveal-fade !important; }
+  .bell-badge { animation: none; }
+}

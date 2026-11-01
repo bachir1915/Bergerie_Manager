@@ -1,6 +1,6 @@
 <div class="landing-page">
   <!-- 1. En-tête / Barre de navigation vitrine -->
-  <header class="landing-header">
+  <header appReveal="down" [class.scrolled]="scrolled()" class="landing-header">
     <div class="landing-nav-container">
       <div class="brand" routerLink="/">
         <div class="brand-icon-wrap">
@@ -21,7 +21,7 @@
 
       <div class="nav-actions">
         @if (authService.isAuthenticated()) {
-          <a [routerLink]="dashboardUrl" class="btn-nav-primary">
+          <a data-fx="sweep" [routerLink]="dashboardUrl" class="btn-nav-primary">
             <i class="bi bi-speedometer2"></i>
             <span>Mon Espace</span>
           </a>
@@ -30,7 +30,7 @@
             <i class="bi bi-box-arrow-in-right"></i>
             <span>Connexion</span>
           </a>
-          <a routerLink="/inscription" class="btn-nav-primary" id="nav-register-btn">
+          <a data-fx="sweep" routerLink="/inscription" class="btn-nav-primary" id="nav-register-btn">
             <i class="bi bi-person-plus-fill"></i>
             <span>Créer mon compte</span>
           </a>
@@ -43,11 +43,18 @@
   <section class="hero-section">
     <div class="hero-glow hero-glow-1"></div>
     <div class="hero-glow hero-glow-2"></div>
+    <div class="hero-glow hero-glow-3"></div>
+    <span class="hero-dot" style="--x:8%;--t:15s;--d:0s"></span>
+    <span class="hero-dot" style="--x:21%;--t:19s;--d:3s"></span>
+    <span class="hero-dot" style="--x:37%;--t:14s;--d:6s"></span>
+    <span class="hero-dot" style="--x:58%;--t:18s;--d:1.5s"></span>
+    <span class="hero-dot" style="--x:74%;--t:16s;--d:4.5s"></span>
+    <span class="hero-dot" style="--x:90%;--t:20s;--d:8s"></span>
 
     <div class="hero-container">
       <h1 class="hero-title">
-        La gestion bienveillante de votre bergerie,
-        <span class="text-gradient">de l'enclos aux soins vétérinaires.</span>
+        <span class="line line-1">La gestion bienveillante de votre bergerie,</span>
+        <span class="line line-2 text-gradient">de l'enclos aux soins vétérinaires.</span>
       </h1>
 
       <p class="hero-subtitle">
@@ -75,6 +82,7 @@
       <div class="hero-split-wrapper">
         <div class="hero-sheep-photo">
           <img src="images/belier.jpg" alt="Bélier Ouled Djellal — DIOURGUI" loading="lazy" />
+          <div class="hero-chip"><i class="bi bi-heart-pulse-fill"></i> Troupeau en bonne santé</div>
         </div>
 
         <div class="hero-mockup-wrapper hero-mockup-right">
@@ -193,11 +201,11 @@
       <div class="section-badge">
         <i class="bi bi-grid-fill"></i> Plateforme Complète
       </div>
-      <h2 class="section-title">Tout ce qu'il faut pour piloter votre élevage</h2>
+      <h2 appReveal="up" class="section-title">Tout ce qu'il faut pour piloter votre élevage</h2>
       <p class="section-sub">Découvrez les 4 modules fondamentaux conçus sur mesure pour le quotidien de la bergerie.</p>
 
       <!-- Onglets sélecteurs -->
-      <div class="feature-tabs">
+      <div appReveal="up" [revealDelay]="120" class="feature-tabs">
         <button
           class="tab-btn"
           [class.active]="activeTab() === 'cheptel'"
@@ -229,7 +237,7 @@
       </div>
 
       <!-- Contenu de l'onglet actif -->
-      <div class="tab-card">
+      <div appReveal="zoom" [revealDelay]="120" class="tab-card">
         @if (activeTab() === 'cheptel') {
           <div class="tab-panel">
             <div class="panel-content">
@@ -244,7 +252,7 @@
                 <li><i class="bi bi-check-circle-fill"></i> Historique de croissance et suivi du gain moyen quotidien (GMQ).</li>
                 <li><i class="bi bi-check-circle-fill"></i> Filtrage instantané par enclos, état de santé ou tranche d'âge.</li>
               </ul>
-              <a routerLink="/login" class="btn-panel-action">
+              <a data-fx="sweep" routerLink="/login" class="btn-panel-action">
                 Accéder au registre <i class="bi bi-arrow-right"></i>
               </a>
             </div>
@@ -276,7 +284,7 @@
                 <li><i class="bi bi-check-circle-fill"></i> Graphiques d'historique 24h et 7 jours pour identifier les pics.</li>
                 <li><i class="bi bi-check-circle-fill"></i> Seuil paramétrable selon la race et la sensibilité des agneaux.</li>
               </ul>
-              <a routerLink="/login" class="btn-panel-action">
+              <a data-fx="sweep" routerLink="/login" class="btn-panel-action">
                 Consulter les capteurs <i class="bi bi-arrow-right"></i>
               </a>
             </div>
@@ -351,7 +359,7 @@
                 <li><i class="bi bi-check-circle-fill"></i> Validation officielle des comptes vétérinaires par administration.</li>
                 <li><i class="bi bi-check-circle-fill"></i> Notification instantanée à l'éleveur lors de chaque acte médical.</li>
               </ul>
-              <a routerLink="/login" class="btn-panel-action">
+              <a data-fx="sweep" routerLink="/login" class="btn-panel-action">
                 Accéder à l'espace médical <i class="bi bi-arrow-right"></i>
               </a>
             </div>
@@ -392,7 +400,7 @@
                 <li><i class="bi bi-check-circle-fill"></i> Bilan clinique individualisé et carnet d'observation pour chaque bête.</li>
                 <li><i class="bi bi-check-circle-fill"></i> Conseils personnalisés et visites de suivi avec votre vétérinaire référent.</li>
               </ul>
-              <a routerLink="/login" class="btn-panel-action">
+              <a data-fx="sweep" routerLink="/login" class="btn-panel-action">
                 Découvrir le carnet de santé <i class="bi bi-arrow-right"></i>
               </a>
             </div>
@@ -419,25 +427,25 @@
       <div class="section-badge">
         <i class="bi bi-question-circle-fill"></i> Questions Fréquentes
       </div>
-      <h2 class="section-title">Tout ce que vous devez savoir avant de commencer</h2>
+      <h2 appReveal="up" class="section-title">Tout ce que vous devez savoir avant de commencer</h2>
 
       <div class="faq-grid">
-        <div class="faq-item">
+        <div appReveal="up" class="faq-item">
           <h4><i class="bi bi-shield-check"></i> Comment démarrer sur la plateforme ?</h4>
           <p>Créez simplement votre compte ou connectez-vous. Vous pourrez aussitôt renseigner votre cheptel, configurer vos sondes ou inviter votre vétérinaire.</p>
         </div>
 
-        <div class="faq-item">
+        <div appReveal="up" class="faq-item">
           <h4><i class="bi bi-person-plus-fill"></i> Comment créer mon compte éleveur ou vétérinaire ?</h4>
           <p>Cliquez sur « Créer un compte », renseignez vos informations et votre bergerie sera prête en quelques secondes.</p>
         </div>
 
-        <div class="faq-item">
+        <div appReveal="up" class="faq-item">
           <h4><i class="bi bi-wifi"></i> Quel matériel est nécessaire pour les capteurs IoT ?</h4>
           <p>L'application accepte n'importe quelle sonde compatible HTTP / LoRaWAN (ESP32, Arduino, capteurs commerciaux). Vous pouvez également utiliser l'application manuellement sans aucun capteur.</p>
         </div>
 
-        <div class="faq-item">
+        <div appReveal="up" class="faq-item">
           <h4><i class="bi bi-hospital"></i> Comment mon vétérinaire peut-il rejoindre ma bergerie ?</h4>
           <p>Votre bergerie dispose d'un code unique (ex: <code>AB-12-IV-34</code>). Il vous suffit de communiquer ce code à votre vétérinaire inscrit pour qu'il puisse consulter vos dossiers.</p>
         </div>
@@ -448,20 +456,10 @@
   <!-- 5. Bannière d'Appel à l'Action Finale -->
   <section class="cta-banner-section" id="contact-section">
     <div class="section-container">
-      <div class="cta-inner-card">
+      <div appReveal="zoom" class="cta-inner-card">
         <div class="cta-content">
           <h2>Prêt à optimiser la santé et la rentabilité de votre troupeau ?</h2>
           <p>Rejoignez les éleveurs modernes qui combinent tradition pastorale et technologies connectées.</p>
-          <div class="cta-buttons">
-            <a routerLink="/login" class="btn-cta-demo">
-              <i class="bi bi-box-arrow-in-right"></i>
-              <span>Se Connecter</span>
-            </a>
-            <a routerLink="/inscription" class="btn-cta-signup">
-              <i class="bi bi-stars"></i>
-              <span>Créer mon compte</span>
-            </a>
-          </div>
         </div>
       </div>
     </div>
@@ -500,15 +498,6 @@
             <li><a routerLink="/inscription">Inscription Vétérinaire</a></li>
           </ul>
         </div>
-
-        <div class="footer-col">
-          <h5>Support & Sécurité</h5>
-          <div class="system-status-pill">
-            <span class="pulse-green"></span>
-            <span>Plateforme & Services opérationnels</span>
-          </div>
-          <p class="footer-note">Données sécurisées conformément aux normes de santé animale.</p>
-        </div>
       </div>
 
       <div class="footer-bottom">
@@ -517,4 +506,8 @@
       </div>
     </div>
   </footer>
+
+  <button type="button" class="scroll-top" [class.visible]="showTop()" (click)="remonter()" aria-label="Revenir en haut de la page">
+    <i class="bi bi-arrow-up"></i>
+  </button>
 </div>
