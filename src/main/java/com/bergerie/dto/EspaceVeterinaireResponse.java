@@ -47,6 +47,7 @@ public record EspaceVeterinaireResponse(
 
     public record ActeItem(
             Long id,
+            Long animalId,
             String animalNom,
             String typeSoin,
             String description,

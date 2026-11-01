@@ -9,6 +9,7 @@ import com.bergerie.entity.Animal;
 import com.bergerie.entity.Bergerie;
 import com.bergerie.entity.Veterinaire;
 import com.bergerie.enums.StatutSante;
+import com.bergerie.util.Affichage;
 import com.bergerie.enums.TypeSoin;
 import com.bergerie.repository.ActeMedicalRepository;
 import com.bergerie.repository.AlerteRepository;
@@ -62,13 +63,14 @@ public class EspaceVeterinaireService {
         Bergerie b = bergerieRepository.findById(bergerieId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bergerie introuvable."));
 
-        var animaux = animalRepository.findByBergerieId(bergerieId).stream()
+        var animauxVisibles = Affichage.animaux(animalRepository.findByBergerieId(bergerieId));
+        var animaux = animauxVisibles.stream()
                 .map(a -> new EspaceVeterinaireResponse.AnimalItem(
                         a.getId(), a.getNom(), a.getRace(), a.getSexe(), a.getPoids(),
                         a.getDateNaissance(), a.getStatut().name(), a.getStatutSante().name(), a.getNumeroCapteur()))
                 .toList();
 
-        var alertes = alerteRepository.findByBergerieId(bergerieId).stream()
+        var alertes = Affichage.alertes(alerteRepository.findByBergerieId(bergerieId)).stream()
                 .map(al -> new AlerteDto(al.getId(), al.getType().name(), al.getMessage(),
                         al.getNiveau().name(), al.getStatutAlerte().name(), al.getDateHeure(),
                         al.getAnimal() != null ? al.getAnimal().getNom() : null))
@@ -78,6 +80,7 @@ public class EspaceVeterinaireService {
                 .limit(LIMITE_ACTES)
                 .map(ac -> new EspaceVeterinaireResponse.ActeItem(
                         ac.getId(),
+                        ac.getAnimal() != null ? ac.getAnimal().getId() : null,
                         ac.getAnimal() != null ? ac.getAnimal().getNom() : null,
                         ac.getTypeSoin().name(), ac.getDescription(), ac.getMedicament(), ac.getDose(),
                         ac.getDateSoin(), ac.getProchainRappel()))
@@ -90,8 +93,9 @@ public class EspaceVeterinaireService {
                         d.getTemperature(), d.getHumidite(), d.getQualiteAir(), d.getDateHeure()))
                 .toList();
 
-        long malades = animalRepository.countByBergerieIdAndStatutSante(bergerieId, StatutSante.EN_OBSERVATION);
-        long critiques = animalRepository.countByBergerieIdAndStatutSante(bergerieId, StatutSante.CRITIQUE);
+        // Les compteurs portent sur les animaux affichés (5 au maximum), pour rester cohérents avec la liste.
+        long malades = animauxVisibles.stream().filter(a -> a.getStatutSante() == StatutSante.EN_OBSERVATION).count();
+        long critiques = animauxVisibles.stream().filter(a -> a.getStatutSante() == StatutSante.CRITIQUE).count();
 
         var eleveur = b.getEleveur();
         var info = new EspaceVeterinaireResponse.BergerieInfo(
@@ -132,13 +136,58 @@ public class EspaceVeterinaireService {
         acte.setAnimal(animal);
         acte.setUtilisateur(vet);
         acte.setTypeSoin(type);
+        remplir(acte, form);
+        acteMedicalRepository.save(acte);
+
+        return construire(bergerieId);
+    }
+
+    /** Modifie un acte médical d'un animal de la bergerie consultée. */
+    @Transactional
+    public EspaceVeterinaireResponse modifierActe(Long bergerieId, Long acteId, ActeForm form) {
+        ActeMedical acte = acteDeLaBergerie(bergerieId, acteId);
+
+        Animal animal = animalRepository.findById(form.animalId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Animal introuvable."));
+        if (animal.getBergerie() == null || !animal.getBergerie().getId().equals(bergerieId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Cet animal n'appartient pas à la bergerie que vous consultez.");
+        }
+        try {
+            acte.setTypeSoin(TypeSoin.valueOf(form.typeSoin()));
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Type de soin invalide.");
+        }
+        acte.setAnimal(animal);
+        remplir(acte, form);
+        acteMedicalRepository.save(acte);
+
+        return construire(bergerieId);
+    }
+
+    /** Supprime un acte médical d'un animal de la bergerie consultée. */
+    @Transactional
+    public EspaceVeterinaireResponse supprimerActe(Long bergerieId, Long acteId) {
+        acteMedicalRepository.delete(acteDeLaBergerie(bergerieId, acteId));
+        return construire(bergerieId);
+    }
+
+    private ActeMedical acteDeLaBergerie(Long bergerieId, Long acteId) {
+        ActeMedical acte = acteMedicalRepository.findById(acteId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Acte médical introuvable."));
+        if (acte.getAnimal() == null || acte.getAnimal().getBergerie() == null
+                || !acte.getAnimal().getBergerie().getId().equals(bergerieId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Cet acte n'appartient pas à la bergerie que vous consultez.");
+        }
+        return acte;
+    }
+
+    private void remplir(ActeMedical acte, ActeForm form) {
         acte.setDescription(form.description());
         acte.setMedicament(form.medicament());
         acte.setDose(form.dose());
         acte.setDateSoin(form.dateSoin());
         acte.setProchainRappel(form.prochainRappel());
-        acteMedicalRepository.save(acte);
-
-        return construire(bergerieId);
     }
 }
