@@ -37,6 +37,9 @@ export class Localisation implements OnInit, AfterViewChecked, OnDestroy {
   readonly positions = signal<LocalisationDto[]>([]);
   readonly loading = signal(true);
   readonly erreur = signal<string | null>(null);
+  readonly historique = signal<{ animalNom: string; points: LocalisationDto[] } | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private traceLayer: any = null;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private map: any = null;
@@ -259,6 +262,39 @@ export class Localisation implements OnInit, AfterViewChecked, OnDestroy {
     if (marker) {
       marker.openPopup();
     }
+  }
+
+  /** Cas d'utilisation « Consulter l'historique de localisation » : tracé et liste des dernières positions. */
+  afficherHistorique(pos: LocalisationDto): void {
+    this.service.historiqueAnimal(pos.animalId).subscribe({
+      next: (points) => {
+        this.historique.set({ animalNom: pos.animalNom, points });
+        this.dessinerTrace(points);
+        this.cdr.detectChanges();
+      },
+      error: () => this.erreur.set("Impossible de charger l'historique de cet animal.")
+    });
+  }
+
+  fermerHistorique(): void {
+    this.historique.set(null);
+    if (this.traceLayer && this.map) {
+      this.map.removeLayer(this.traceLayer);
+    }
+    this.traceLayer = null;
+  }
+
+  private dessinerTrace(points: LocalisationDto[]): void {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const L = (window as any)['L'];
+    if (!L || !this.map || !points.length) return;
+    if (this.traceLayer) this.map.removeLayer(this.traceLayer);
+    const coords = points.map((p) => [p.latitude, p.longitude]);
+    this.traceLayer = L.layerGroup([
+      L.polyline(coords, { color: '#2563eb', weight: 3, opacity: 0.85 }),
+      ...coords.map((c: number[]) => L.circleMarker(c, { radius: 3, color: '#2563eb', fillOpacity: 1 }))
+    ]).addTo(this.map);
+    this.map.fitBounds(L.latLngBounds(coords), { padding: [40, 40], maxZoom: 18 });
   }
 
   classeSante(s: string): string {

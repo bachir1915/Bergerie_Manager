@@ -5,7 +5,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActeForm, DashboardService } from '../../core/services/dashboard.service';
 import { AuthService } from '../../core/services/auth.service';
-import { EspaceVeterinaireResponse } from '../../core/models/espace-veterinaire.model';
+import { ActeItem, EspaceVeterinaireResponse } from '../../core/models/espace-veterinaire.model';
 
 const TYPES_SOIN = ['VACCINATION', 'TRAITEMENT', 'ANALYSE', 'CONSULTATION'];
 
@@ -28,6 +28,8 @@ export class DashboardVeterinaire {
   readonly erreur = signal<string | null>(null);
   readonly acteFormOuvert = signal(false);
   readonly acteErreur = signal<string | null>(null);
+  /** Id de l'acte en cours de modification (null = création d'un nouvel acte). */
+  readonly acteEnEdition = signal<number | null>(null);
 
   readonly acteForm = this.fb.group({
     animalId: [null as number | null, Validators.required],
@@ -81,6 +83,7 @@ export class DashboardVeterinaire {
 
   ouvrirActeForm(): void {
     this.acteErreur.set(null);
+    this.acteEnEdition.set(null);
     this.acteForm.reset({
       animalId: null, typeSoin: 'CONSULTATION', description: '', medicament: '', dose: '',
       dateSoin: new Date().toISOString().slice(0, 10), prochainRappel: null
@@ -96,9 +99,31 @@ export class DashboardVeterinaire {
       description: v.description || null, medicament: v.medicament || null, dose: v.dose || null,
       dateSoin: v.dateSoin!, prochainRappel: v.prochainRappel || null
     };
-    this.dashboardService.ajouterActe(payload).subscribe({
-      next: (r) => { this.data.set(r); this.acteFormOuvert.set(false); },
+    const id = this.acteEnEdition();
+    const appel = id === null ? this.dashboardService.ajouterActe(payload) : this.dashboardService.modifierActe(id, payload);
+    appel.subscribe({
+      next: (r) => { this.data.set(r); this.acteFormOuvert.set(false); this.acteEnEdition.set(null); },
       error: (err: HttpErrorResponse) => this.acteErreur.set(err.error?.detail || 'Enregistrement impossible.')
+    });
+  }
+
+  /** Cas d'utilisation « Modifier un acte médical » : recharge l'acte dans le formulaire. */
+  modifierActe(a: ActeItem): void {
+    this.acteErreur.set(null);
+    this.acteEnEdition.set(a.id);
+    this.acteForm.reset({
+      animalId: a.animalId, typeSoin: a.typeSoin, description: a.description ?? '', medicament: a.medicament ?? '',
+      dose: a.dose ?? '', dateSoin: a.dateSoin, prochainRappel: a.prochainRappel
+    });
+    this.acteFormOuvert.set(true);
+  }
+
+  /** Cas d'utilisation « Supprimer un acte médical ». */
+  supprimerActe(a: ActeItem): void {
+    if (!confirm(`Supprimer l'acte « ${a.typeSoin} » du ${a.dateSoin} (${a.animalNom || 'animal'}) ?`)) return;
+    this.dashboardService.supprimerActe(a.id).subscribe({
+      next: (r) => this.data.set(r),
+      error: (err: HttpErrorResponse) => this.erreur.set(err.error?.detail || 'Suppression impossible.')
     });
   }
 

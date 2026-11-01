@@ -9,7 +9,7 @@ import { DonneeEnvDto } from '../../core/models/dashboard.model';
   template: `
     <div class="page-header">
       <div>
-        <h1 class="page-title">Données environnementales</h1>
+        <h1 class="page-title">Consulter données environnementales</h1>
         <p class="page-subtitle">Mesures des capteurs — {{ mesures().length }} relevé(s)</p>
       </div>
     </div>

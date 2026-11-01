@@ -51,6 +51,18 @@ export class Animaux {
   });
 
   readonly estEleveur = this.auth.currentUser()?.role === 'ELEVEUR';
+  readonly titre = this.estEleveur ? 'Gérer les animaux' : this.auth.currentUser()?.role === 'VETERINAIRE' ? 'Consulter un animal' : 'Consulter les animaux';
+  /** Affichage par pages de 5 éléments. */
+  readonly taillePage = 5;
+  readonly page = signal(0);
+  readonly nbPages = computed(() => Math.max(1, Math.ceil(this.animauxFiltres().length / this.taillePage)));
+  readonly pageCourante = computed(() => Math.min(this.page(), this.nbPages() - 1));
+  readonly debutPage = computed(() => (this.animauxFiltres().length) === 0 ? 0 : this.pageCourante() * this.taillePage + 1);
+  readonly finPage = computed(() => Math.min((this.animauxFiltres().length), (this.pageCourante() + 1) * this.taillePage));
+  pagePrecedente(): void { this.page.set(Math.max(0, this.pageCourante() - 1)); }
+  pageSuivante(): void { this.page.set(Math.min(this.nbPages() - 1, this.pageCourante() + 1)); }
+  readonly animauxPage = computed(() => this.animauxFiltres().slice(this.pageCourante() * this.taillePage, (this.pageCourante() + 1) * this.taillePage));
+
 
   readonly form = this.fb.group({
     nom: ['', Validators.required],

@@ -1,6 +1,6 @@
 <div class="page-header">
   <div>
-    <h1 class="page-title">Animaux</h1>
+    <h1 class="page-title">{{ titre }}</h1>
     <p class="page-subtitle">Cheptel — {{ animaux().length }} animal(aux) enregistré(s)</p>
   </div>
   @if (estEleveur) {
@@ -11,15 +11,15 @@
 </div>
 
 <div class="stats-grid" style="margin-bottom:1.5rem">
-  <div class="stat-card stat-card-green" (click)="filtreSante.set('BON')" style="cursor:pointer" title="Filtrer bon état">
+  <div class="stat-card stat-card-green" (click)="filtreSante.set('BON'); page.set(0)" style="cursor:pointer" title="Filtrer bon état">
     <div class="stat-value">{{ parSante('BON') }}</div>
     <div class="stat-label">Bon état</div>
   </div>
-  <div class="stat-card stat-card-orange" (click)="filtreSante.set('MALADE')" style="cursor:pointer" title="Filtrer malades">
+  <div class="stat-card stat-card-orange" (click)="filtreSante.set('MALADE'); page.set(0)" style="cursor:pointer" title="Filtrer malades">
     <div class="stat-value">{{ parSante('MALADE') }}</div>
     <div class="stat-label">Malades</div>
   </div>
-  <div class="stat-card stat-card-red" (click)="filtreSante.set('CRITIQUE')" style="cursor:pointer" title="Filtrer critiques">
+  <div class="stat-card stat-card-red" (click)="filtreSante.set('CRITIQUE'); page.set(0)" style="cursor:pointer" title="Filtrer critiques">
     <div class="stat-value">{{ parSante('CRITIQUE') }}</div>
     <div class="stat-label">Critiques</div>
   </div>
@@ -101,25 +101,25 @@
             style="padding:0.35rem 0.65rem; font-size:0.75rem; border-radius:6px; border:1px solid var(--border); background:var(--surface); cursor:pointer;"
             [style.background]="filtreSante() === 'TOUS' ? '#2E6B45' : 'transparent'"
             [style.color]="filtreSante() === 'TOUS' ? '#FFF' : 'var(--ink-soft)'"
-            (click)="filtreSante.set('TOUS')">Tous</button>
+            (click)="filtreSante.set('TOUS'); page.set(0)">Tous</button>
           <button
             class="filtre-btn"
             style="padding:0.35rem 0.65rem; font-size:0.75rem; border-radius:6px; border:1px solid var(--border); background:var(--surface); cursor:pointer;"
             [style.background]="filtreSante() === 'BON' ? '#2E6B45' : 'transparent'"
             [style.color]="filtreSante() === 'BON' ? '#FFF' : 'var(--ink-soft)'"
-            (click)="filtreSante.set('BON')">Sains</button>
+            (click)="filtreSante.set('BON'); page.set(0)">Sains</button>
           <button
             class="filtre-btn"
             style="padding:0.35rem 0.65rem; font-size:0.75rem; border-radius:6px; border:1px solid var(--border); background:var(--surface); cursor:pointer;"
             [style.background]="filtreSante() === 'MALADE' ? '#A8502D' : 'transparent'"
             [style.color]="filtreSante() === 'MALADE' ? '#FFF' : 'var(--ink-soft)'"
-            (click)="filtreSante.set('MALADE')">Malades</button>
+            (click)="filtreSante.set('MALADE'); page.set(0)">Malades</button>
           <button
             class="filtre-btn"
             style="padding:0.35rem 0.65rem; font-size:0.75rem; border-radius:6px; border:1px solid var(--border); background:var(--surface); cursor:pointer;"
             [style.background]="filtreSante() === 'CRITIQUE' ? '#7A2E1A' : 'transparent'"
             [style.color]="filtreSante() === 'CRITIQUE' ? '#FFF' : 'var(--ink-soft)'"
-            (click)="filtreSante.set('CRITIQUE')">Critiques</button>
+            (click)="filtreSante.set('CRITIQUE'); page.set(0)">Critiques</button>
         </div>
       </div>
     </div>
@@ -141,7 +141,7 @@
               </td>
             </tr>
           }
-          @for (a of animauxFiltres(); track a.id) {
+          @for (a of animauxPage(); track a.id) {
             <tr>
               <td><strong>{{ a.nom }}</strong></td>
               <td>{{ a.race }}</td>
@@ -167,5 +167,12 @@
         </tbody>
       </table>
     </div>
+    @if (nbPages() > 1) {
+    <div class="pager" style="display:flex; align-items:center; justify-content:flex-end; gap:0.75rem; padding:0.75rem 1.25rem; font-size:0.82rem; color:var(--ink-soft);">
+      <span>{{ debutPage() }}–{{ finPage() }} sur {{ animauxFiltres().length }}</span>
+      <button type="button" (click)="pagePrecedente()" [disabled]="pageCourante() === 0" style="padding:0.3rem 0.7rem; border-radius:8px; border:1px solid var(--border); background:var(--surface); cursor:pointer;"><i class="bi bi-chevron-left"></i> Précédent</button>
+      <button type="button" (click)="pageSuivante()" [disabled]="pageCourante() >= nbPages() - 1" style="padding:0.3rem 0.7rem; border-radius:8px; border:1px solid var(--border); background:var(--surface); cursor:pointer;">Suivant <i class="bi bi-chevron-right"></i></button>
+    </div>
+    }
   </div>
 }

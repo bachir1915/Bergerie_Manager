@@ -32,6 +32,16 @@ export class DashboardService {
   ajouterActe(form: ActeForm): Observable<EspaceVeterinaireResponse> {
     return this.http.post<EspaceVeterinaireResponse>(`${API_BASE_URL}/veterinaire/actes`, form);
   }
+
+  /** Modifie un acte médical de la bergerie consultée. */
+  modifierActe(id: number, form: ActeForm): Observable<EspaceVeterinaireResponse> {
+    return this.http.put<EspaceVeterinaireResponse>(`${API_BASE_URL}/veterinaire/actes/${id}`, form);
+  }
+
+  /** Supprime un acte médical de la bergerie consultée. */
+  supprimerActe(id: number): Observable<EspaceVeterinaireResponse> {
+    return this.http.delete<EspaceVeterinaireResponse>(`${API_BASE_URL}/veterinaire/actes/${id}`);
+  }
 }
 
 export interface ActeForm {

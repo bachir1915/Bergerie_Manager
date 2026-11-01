@@ -1,14 +1,16 @@
 import { Component, inject, signal, computed } from '@angular/core';
-import { ConsultationService } from '../../core/services/consultation.service';
+import { DatePipe } from '@angular/common';
+import { ConnexionDto, ConsultationService } from '../../core/services/consultation.service';
 import { VeterinairePublic } from '../../core/models/consultation.model';
 
 @Component({
   selector: 'app-veterinaires',
+  imports: [DatePipe],
   template: `
     <div class="page-header">
       <div>
         <h1 class="page-title">
-          <i class="bi bi-hospital-fill text-accent me-2"></i>Vétérinaires
+          <i class="bi bi-hospital-fill text-accent me-2"></i>Vérifier connexion vétérinaire
         </h1>
         <p class="page-subtitle">
           Praticiens <strong>validés par l'administration</strong> — Contactez-les directement pour les soins de votre cheptel
@@ -22,6 +24,63 @@ import { VeterinairePublic } from '../../core/models/consultation.model';
         Chargement des praticiens...
       </div>
     } @else {
+
+      <!-- Connexions des vétérinaires à mes bergeries : vérifier, accepter, refuser, annuler -->
+      <div class="card-dark" style="margin-bottom:1.5rem; padding:0;">
+        <div class="card-dark-header" style="display:flex; align-items:center; gap:0.55rem; padding:1rem 1.25rem;">
+          <i class="bi bi-link-45deg text-accent"></i>
+          <span>Connexions des vétérinaires à mes bergeries</span>
+          <span style="background:rgba(168,80,45,0.12); color:#A8502D; font-size:0.75rem; border-radius:999px; padding:0.2rem 0.6rem; font-weight:700;">
+            {{ enAttente() }} en attente
+          </span>
+        </div>
+        @if (erreurConnexion()) {
+          <div style="margin:0 1.25rem 0.75rem; padding:0.6rem 0.9rem; border-radius:8px; background:rgba(225,29,72,0.08); color:#b3261e; font-size:0.85rem;">{{ erreurConnexion() }}</div>
+        }
+        <div class="table-responsive">
+          <table class="table-dark-custom">
+            <thead>
+              <tr><th>Vétérinaire</th><th>Bergerie</th><th>Demande</th><th>Statut</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+              @if (!connexions().length) {
+                <tr><td colspan="5" style="text-align:center; padding:1.5rem; color:var(--text-muted)">
+                  Aucune demande. Donnez le code de votre bergerie à votre vétérinaire : sa demande apparaîtra ici.
+                </td></tr>
+              }
+              @for (c of connexions(); track c.id) {
+                <tr>
+                  <td><strong>{{ c.veterinaireNom }}</strong><br><small style="color:var(--ink-faint)">{{ c.veterinaireEmail }}</small></td>
+                  <td>{{ c.bergerieNom }}<br><small style="color:var(--ink-faint)">{{ c.bergerieCode }}</small></td>
+                  <td>{{ c.dateDemande | date: 'dd/MM/yyyy HH:mm' }}</td>
+                  <td>
+                    <span [style.color]="couleurStatut(c.statut)" style="font-weight:700;">{{ libelleStatut(c.statut) }}</span>
+                  </td>
+                  <td style="white-space:nowrap">
+                    @if (c.statut === 'EN_ATTENTE') {
+                      <button type="button" (click)="accepter(c)" [disabled]="enCours() === c.id"
+                              style="padding:0.3rem 0.7rem; font-size:0.78rem; border-radius:8px; border:1px solid #2E6B45; background:#2E6B45; color:#fff; cursor:pointer; margin-right:0.35rem;">
+                        <i class="bi bi-check-lg"></i> Accepter la connexion
+                      </button>
+                      <button type="button" (click)="refuser(c)" [disabled]="enCours() === c.id"
+                              style="padding:0.3rem 0.7rem; font-size:0.78rem; border-radius:8px; border:1px solid #b3261e; background:transparent; color:#b3261e; cursor:pointer;">
+                        <i class="bi bi-x-lg"></i> Refuser
+                      </button>
+                    } @else if (c.statut === 'ACCEPTEE') {
+                      <button type="button" (click)="annuler(c)" [disabled]="enCours() === c.id"
+                              style="padding:0.3rem 0.7rem; font-size:0.78rem; border-radius:8px; border:1px solid #b3261e; background:transparent; color:#b3261e; cursor:pointer;">
+                        <i class="bi bi-slash-circle"></i> Annuler la connexion
+                      </button>
+                    } @else {
+                      <span style="color:var(--ink-faint); font-size:0.8rem;">—</span>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       <!-- Barre de recherche + compteur -->
       <div class="card-dark" style="margin-bottom:1.5rem; padding:1rem 1.25rem;">
@@ -154,6 +213,10 @@ export class Veterinaires {
   readonly vets = signal<VeterinairePublic[]>([]);
   readonly loading = signal(true);
   readonly recherche = signal('');
+  readonly connexions = signal<ConnexionDto[]>([]);
+  readonly enCours = signal<number | null>(null);
+  readonly erreurConnexion = signal<string | null>(null);
+  readonly enAttente = computed(() => this.connexions().filter((c) => c.statut === 'EN_ATTENTE').length);
 
   readonly vetsFiltres = computed(() => {
     const q = this.recherche().trim().toLowerCase();
@@ -168,9 +231,35 @@ export class Veterinaires {
   });
 
   constructor() {
+    this.service.connexions().subscribe({ next: (l) => this.connexions.set(l), error: () => this.erreurConnexion.set('Impossible de charger les connexions.') });
     this.service.veterinaires().subscribe({
       next: (l) => { this.vets.set(l); this.loading.set(false); },
       error: () => this.loading.set(false)
     });
+  }
+
+  /** Cas d'utilisation « Vérifier la connexion vétérinaire » : accepter, refuser ou annuler. */
+  accepter(c: ConnexionDto): void { this.agir(c, this.service.accepterConnexion(c.id)); }
+  refuser(c: ConnexionDto): void { this.agir(c, this.service.refuserConnexion(c.id)); }
+  annuler(c: ConnexionDto): void {
+    if (!confirm(`Annuler la connexion de ${c.veterinaireNom} à la bergerie « ${c.bergerieNom} » ? Il perdra l'accès à votre cheptel.`)) return;
+    this.agir(c, this.service.annulerConnexion(c.id));
+  }
+
+  private agir(c: ConnexionDto, appel: import('rxjs').Observable<ConnexionDto>): void {
+    this.enCours.set(c.id);
+    this.erreurConnexion.set(null);
+    appel.subscribe({
+      next: (maj) => { this.connexions.update((l) => l.map((x) => (x.id === maj.id ? maj : x))); this.enCours.set(null); },
+      error: (err) => { this.enCours.set(null); this.erreurConnexion.set(err.error?.detail || 'Action impossible.'); }
+    });
+  }
+
+  libelleStatut(s: string): string {
+    return ({ EN_ATTENTE: 'En attente', ACCEPTEE: 'Acceptée', REFUSEE: 'Refusée', ANNULEE: 'Annulée' } as Record<string, string>)[s] ?? s;
+  }
+
+  couleurStatut(s: string): string {
+    return ({ EN_ATTENTE: '#A8502D', ACCEPTEE: '#2E6B45', REFUSEE: '#b3261e', ANNULEE: '#6b7280' } as Record<string, string>)[s] ?? 'inherit';
   }
 }

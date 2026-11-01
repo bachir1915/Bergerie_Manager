@@ -2,8 +2,8 @@ export interface AlerteDto {
   id: number;
   type: string;
   message: string;
-  niveau: 'INFO' | 'WARNING' | 'CRITIQUE' | 'URGENCE';
-  statutAlerte: 'NON_LUE' | 'LUE' | 'TRAITEE';
+  niveau: 'NORMAL' | 'MODERE' | 'ELEVE' | 'CRITIQUE';
+  statutAlerte: 'NOUVELLE' | 'EN_COURS' | 'TRAITEE' | 'IGNOREE';
   dateHeure: string;
   animalNom: string | null;
 }

@@ -1,6 +1,6 @@
 <div class="page-header">
   <div>
-    <h1 class="page-title">Espace Vétérinaire</h1>
+    <h1 class="page-title">Gérer acte médical</h1>
     <p class="page-subtitle">Dr. {{ authService.currentUser()?.prenom }} {{ authService.currentUser()?.nom }}</p>
   </div>
 </div>
@@ -70,7 +70,7 @@
         <label>Dose <input formControlName="dose" placeholder="ex : 10 mg/kg" /></label>
         <label style="grid-column:1/-1">Description <textarea rows="2" formControlName="description"></textarea></label>
         <div class="acte-actions">
-          <button type="submit" class="btn-mini">Enregistrer</button>
+          <button type="submit" class="btn-mini">{{ acteEnEdition() === null ? 'Enregistrer' : 'Enregistrer les modifications' }}</button>
           <button type="button" class="btn-plain" (click)="acteFormOuvert.set(false)">Annuler</button>
         </div>
       </form>
@@ -78,10 +78,10 @@
 
     <div class="table-responsive">
       <table class="tbl">
-        <thead><tr><th>Date</th><th>Animal</th><th>Type</th><th>Description</th><th>Médicament / dose</th><th>Prochain rappel</th></tr></thead>
+        <thead><tr><th>Date</th><th>Animal</th><th>Type</th><th>Description</th><th>Médicament / dose</th><th>Prochain rappel</th><th>Actions</th></tr></thead>
         <tbody>
           @if (!d.derniersActes.length) {
-            <tr><td colspan="6" class="muted">Aucun acte médical enregistré</td></tr>
+            <tr><td colspan="7" class="muted">Aucun acte médical enregistré</td></tr>
           }
           @for (a of d.derniersActes; track a.id) {
             <tr>
@@ -91,6 +91,10 @@
               <td>{{ a.description || '—' }}</td>
               <td>{{ a.medicament ? (a.medicament + (a.dose ? ' — ' + a.dose : '')) : '—' }}</td>
               <td>{{ a.prochainRappel ? (a.prochainRappel | date: 'dd/MM/yyyy') : '—' }}</td>
+              <td style="white-space:nowrap">
+                <button class="btn-mini" type="button" (click)="modifierActe(a)" title="Modifier cet acte"><i class="bi bi-pencil"></i> Modifier</button>
+                <button class="btn-plain" type="button" (click)="supprimerActe(a)" title="Supprimer cet acte" style="color:#b3261e"><i class="bi bi-trash"></i> Supprimer</button>
+              </td>
             </tr>
           }
         </tbody>

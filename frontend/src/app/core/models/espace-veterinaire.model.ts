@@ -27,6 +27,7 @@ export interface AnimalItem {
 
 export interface ActeItem {
   id: number;
+  animalId: number | null;
   animalNom: string | null;
   typeSoin: string;
   description: string | null;

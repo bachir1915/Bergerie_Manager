@@ -46,62 +46,48 @@ export class Shell implements OnInit, OnDestroy {
 
   private subRouter?: Subscription;
 
+  // Menus alignés sur les diagrammes de cas d'utilisation : un cas d'utilisation principal = un écran, même ordre.
   readonly eleveurSections: NavSection[] = [
     {
-      title: 'Accueil',
+      title: 'Fonctionnalités',
       items: [
         {
-          path: '/dashboard/eleveur',
-          icon: 'bi-speedometer2',
-          label: 'Tableau de bord',
-          description: 'Vue globale & santé'
-        }
-      ]
-    },
-    {
-      title: 'Cheptel',
-      items: [
-        {
-          path: '/animaux',
-          icon: 'bi-collection-play-fill',
-          label: 'Animaux',
-          description: 'Inventaire & suivi individuel'
-        }
-      ]
-    },
-    {
-      title: 'Surveillance',
-      items: [
+          path: '/donnees-env',
+          icon: 'bi-thermometer-sun',
+          label: 'Consulter données environnementales',
+          description: 'Graphique et historique des mesures'
+        },
         {
           path: '/alertes',
           icon: 'bi-bell-fill',
-          label: 'Alertes',
-          description: 'Urgences & soins',
+          label: 'Consulter alertes',
+          description: 'Filtrer, marquer comme traitée',
           badge: () => this.alertesNonLues() > 0 ? this.alertesNonLues() : null,
           badgeClass: 'badge-pill-danger'
         },
         {
-          path: '/donnees-env',
-          icon: 'bi-thermometer-sun',
-          label: 'Climat',
-          description: 'Température & humidité'
+          path: '/animaux',
+          icon: 'bi-collection-play-fill',
+          label: 'Gérer les animaux',
+          description: 'Consulter, ajouter, modifier, supprimer'
+        },
+        {
+          path: '/dashboard/eleveur',
+          icon: 'bi-speedometer2',
+          label: 'Consulter statistiques du troupeau',
+          description: 'Tableau de bord'
         },
         {
           path: '/localisation',
           icon: 'bi-geo-alt-fill',
-          label: 'Carte GPS',
-          description: 'Positions en direct'
-        }
-      ]
-    },
-    {
-      title: 'Contacts',
-      items: [
+          label: 'Consulter localisation des animaux',
+          description: 'Carte, positions et historique'
+        },
         {
           path: '/veterinaires',
           icon: 'bi-hospital-fill',
-          label: 'Vétérinaires',
-          description: 'Contacter un praticien'
+          label: 'Vérifier connexion vétérinaire',
+          description: 'Accepter, refuser, annuler'
         }
       ]
     }
@@ -109,41 +95,36 @@ export class Shell implements OnInit, OnDestroy {
 
   readonly veterinaireSections: NavSection[] = [
     {
-      title: 'Clinique',
+      title: 'Fonctionnalités',
       items: [
         {
           path: '/dashboard/veterinaire',
           icon: 'bi-house-heart-fill',
-          label: 'Clinique',
-          description: 'Soins & bergerie auscultée'
+          label: 'Gérer acte médical',
+          description: 'Consulter, ajouter, modifier, supprimer'
         },
         {
           path: '/animaux',
           icon: 'bi-collection-play-fill',
-          label: 'Animaux',
-          description: 'Dossiers & état de santé'
-        }
-      ]
-    },
-    {
-      title: 'Surveillance',
-      items: [
-        {
-          path: '/alertes',
-          icon: 'bi-bell-fill',
-          label: 'Alertes',
-          description: 'Urgences & bêtes à risque',
-          badge: () => this.alertesNonLues() > 0 ? this.alertesNonLues() : null,
-          badgeClass: 'badge-pill-danger'
+          label: 'Consulter un animal',
+          description: 'Dossier de santé, filtres'
         },
         {
           path: '/donnees-env',
           icon: 'bi-thermometer-snow',
-          label: 'Climat',
-          description: 'Température & humidité'
+          label: 'Consulter données environnementales',
+          description: 'Graphique et historique des mesures'
+        },
+        {
+          path: '/alertes',
+          icon: 'bi-bell-fill',
+          label: 'Consulter alertes',
+          description: 'Filtrer, marquer comme traitée',
+          badge: () => this.alertesNonLues() > 0 ? this.alertesNonLues() : null,
+          badgeClass: 'badge-pill-danger'
         }
       ]
-    },
+    }
   ];
 
   readonly adminSections: NavSection[] = [
@@ -154,8 +135,8 @@ export class Shell implements OnInit, OnDestroy {
           path: '/admin',
           queryParams: { tab: 'veterinaires' },
           icon: 'bi-shield-check',
-          label: 'Vétérinaires',
-          description: 'Comptes à valider',
+          label: 'Gérer les vétérinaires',
+          description: 'Valider, rejeter, suspendre, réactiver',
           badge: () => this.vetsEnAttente() > 0 ? this.vetsEnAttente() : null,
           badgeClass: 'badge-pill-warning'
         },
@@ -163,8 +144,8 @@ export class Shell implements OnInit, OnDestroy {
           path: '/admin',
           queryParams: { tab: 'eleveurs' },
           icon: 'bi-person-badge-fill',
-          label: 'Éleveurs',
-          description: 'Liste des éleveurs inscrits'
+          label: 'Consulter les éleveurs',
+          description: 'Éleveurs et bergeries'
         }
       ]
     },
@@ -174,14 +155,14 @@ export class Shell implements OnInit, OnDestroy {
         {
           path: '/animaux',
           icon: 'bi-collection-play-fill',
-          label: 'Animaux',
+          label: 'Consulter les animaux',
           description: 'Suivi de tout le cheptel'
         },
         {
           path: '/donnees-env',
           icon: 'bi-cpu-fill',
-          label: 'Climat',
-          description: 'Capteurs & télémétrie'
+          label: 'Consulter les données environnementales',
+          description: 'Capteurs et télémétrie'
         }
       ]
     }
@@ -206,7 +187,7 @@ export class Shell implements OnInit, OnDestroy {
     // 1. Charger le nombre d'alertes non lues
     this.consultationService.alertes().subscribe({
       next: (list) => {
-        const nonLues = list.filter((a) => a.statutAlerte === 'NON_LUE').length;
+        const nonLues = list.filter((a) => a.statutAlerte === 'NOUVELLE').length;
         this.alertesNonLues.set(nonLues);
       },
       error: () => {}

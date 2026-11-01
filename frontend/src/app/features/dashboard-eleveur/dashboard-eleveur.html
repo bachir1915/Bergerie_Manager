@@ -1,6 +1,6 @@
 <div class="page-header">
   <div>
-    <h1 class="page-title">Tableau de Bord</h1>
+    <h1 class="page-title">Consulter statistiques du troupeau</h1>
     <p class="page-subtitle">
       Bienvenue, <strong>{{ authService.currentUser()?.prenom }}</strong>
     </p>
@@ -13,6 +13,7 @@
 @if (loading()) {
   <div class="card-dark">Chargement...</div>
 } @else if (data(); as d) {
+  <h2 class="section-heading" style="font-size:1rem; margin:0 0 0.75rem; color:var(--ink-soft);"><i class="bi bi-bar-chart-fill text-accent"></i> Statistiques du troupeau</h2>
   <div class="stats-grid">
     <div class="stat-card stat-card-blue">
       <div class="stat-icon"><i class="bi bi-collection"></i></div>
@@ -61,12 +62,12 @@
           <div class="text-center" style="color:var(--text-muted)">Aucune alerte</div>
         }
         @for (alerte of d.dernieresAlertes; track alerte.id) {
-          <div class="alert-item" [class.unread]="alerte.statutAlerte === 'NON_LUE'">
+          <div class="alert-item" [class.unread]="alerte.statutAlerte === 'NOUVELLE'">
             <div class="alert-badge"
-                 [class.badge-urgence]="alerte.niveau === 'URGENCE'"
+                 [class.badge-urgence]="alerte.niveau === 'ELEVE'"
                  [class.badge-critique]="alerte.niveau === 'CRITIQUE'"
-                 [class.badge-warning]="alerte.niveau === 'WARNING'"
-                 [class.badge-info]="alerte.niveau === 'INFO'">
+                 [class.badge-warning]="alerte.niveau === 'MODERE'"
+                 [class.badge-info]="alerte.niveau === 'NORMAL'">
               <i class="bi bi-exclamation-circle"></i>
             </div>
             <div>

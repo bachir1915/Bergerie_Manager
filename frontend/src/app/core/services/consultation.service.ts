@@ -6,6 +6,19 @@ import { AnimalDto, VeterinairePublic } from '../models/consultation.model';
 import { AlerteDto, DonneeEnvDto } from '../models/dashboard.model';
 import { LocalisationDto, ZoneDto, SimulationStatusDto } from '../models/localisation.model';
 
+export interface ConnexionDto {
+  id: number;
+  veterinaireNom: string;
+  veterinaireEmail: string;
+  veterinaireTelephone: string | null;
+  specialite: string | null;
+  bergerieNom: string;
+  bergerieCode: string;
+  statut: 'EN_ATTENTE' | 'ACCEPTEE' | 'REFUSEE' | 'ANNULEE';
+  dateDemande: string;
+  dateReponse: string | null;
+}
+
 export interface BergerieChoix {
   id: number;
   nom: string;
@@ -34,6 +47,29 @@ export class ConsultationService {
 
   alertes(): Observable<AlerteDto[]> {
     return this.http.get<AlerteDto[]>(`${API_BASE_URL}/alertes`);
+  }
+
+  /** Marque une alerte comme traitée. */
+  traiterAlerte(id: number): Observable<AlerteDto> {
+    return this.http.post<AlerteDto>(`${API_BASE_URL}/alertes/${id}/traiter`, {});
+  }
+
+  // ---- Connexions des vétérinaires à mes bergeries (éleveur) ----
+
+  connexions(): Observable<ConnexionDto[]> {
+    return this.http.get<ConnexionDto[]>(`${API_BASE_URL}/connexions`);
+  }
+
+  accepterConnexion(id: number): Observable<ConnexionDto> {
+    return this.http.post<ConnexionDto>(`${API_BASE_URL}/connexions/${id}/accepter`, {});
+  }
+
+  refuserConnexion(id: number): Observable<ConnexionDto> {
+    return this.http.post<ConnexionDto>(`${API_BASE_URL}/connexions/${id}/refuser`, {});
+  }
+
+  annulerConnexion(id: number): Observable<ConnexionDto> {
+    return this.http.post<ConnexionDto>(`${API_BASE_URL}/connexions/${id}/annuler`, {});
   }
 
   donneesEnv(): Observable<DonneeEnvDto[]> {
