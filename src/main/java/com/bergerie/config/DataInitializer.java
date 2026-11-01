@@ -54,6 +54,7 @@ import java.time.LocalDateTime;
  */
 @Component
 @Profile("dev")
+@org.springframework.core.annotation.Order(1)
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 

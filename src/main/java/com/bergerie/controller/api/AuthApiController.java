@@ -8,6 +8,7 @@ import com.bergerie.entity.Veterinaire;
 import com.bergerie.enums.StatutValidation;
 import com.bergerie.repository.UtilisateurRepository;
 import com.bergerie.service.CodeConnexionService;
+import com.bergerie.service.ConnexionService;
 import com.bergerie.service.EspaceVeterinaireService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -46,6 +47,7 @@ public class AuthApiController {
 
     private final UtilisateurRepository utilisateurRepository;
     private final EspaceVeterinaireService espaceVeterinaireService;
+    private final ConnexionService connexionService;
     private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
 
     @PostMapping("/login")
@@ -69,6 +71,8 @@ public class AuthApiController {
                         "Votre compte vétérinaire n'est pas encore validé par l'administrateur.");
                 }
                 Bergerie bergerie = espaceVeterinaireService.parCodeOuErreur(code);
+                // L'éleveur doit avoir accepté la connexion (sinon une demande lui est envoyée).
+                connexionService.exigerAcceptee(vet, bergerie);
                 bergerieId = bergerie.getId();
                 authorities = List.of(new SimpleGrantedAuthority("ROLE_VETERINAIRE"));
             }
