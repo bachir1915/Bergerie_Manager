@@ -17,7 +17,6 @@
         <a href="#features" [class.active]="section() === 'features'" (click)="scrollToSection('features', $event)">Fonctionnalités</a>
         <a href="#features" (click)="scrollToSection('iot', $event)">Capteurs IoT</a>
         <a href="#features" (click)="scrollToSection('sante', $event)">Santé & Prévention</a>
-        <a href="#process" [class.active]="section() === 'process'" (click)="scrollToSection('process', $event)">Étapes</a>
         <a href="#faq" [class.active]="section() === 'faq'" (click)="scrollToSection('faq', $event)">FAQ</a>
       </nav>
 
@@ -428,43 +427,6 @@
     </div>
   </section>
 
-
-  <!-- 3b. Comment ça marche : de la mesure à l'action -->
-  <section class="process-section" id="process">
-    <div class="section-container">
-      <div appReveal="down" class="section-badge">
-        <i class="bi bi-diagram-3-fill"></i> Comment ça marche
-      </div>
-      <h2 appReveal="up" class="section-title">De la mesure à l'action en quatre étapes</h2>
-      <p appReveal="up" [revealDelay]="100" class="section-sub">
-        Du boîtier fixé à l'animal jusqu'au soin enregistré par le vétérinaire, tout est relié.
-      </p>
-
-      <div appReveal="up" class="process-steps">
-        <div class="process-line"></div>
-        <div appReveal="up" class="process-step">
-          <div class="process-circle"><i class="bi bi-cpu-fill"></i><span class="process-num">01</span></div>
-          <h4>Capteurs</h4>
-          <p>Le boîtier ESP32 envoie la position GPS toutes les 30 secondes, puis la température, l'humidité et la qualité de l'air toutes les 60 secondes.</p>
-        </div>
-        <div appReveal="up" class="process-step">
-          <div class="process-circle"><i class="bi bi-activity"></i><span class="process-num">02</span></div>
-          <h4>Analyse</h4>
-          <p>Un modèle d'apprentissage repère les comportements anormaux et la sortie de la zone pastorale est contrôlée à chaque position.</p>
-        </div>
-        <div appReveal="up" class="process-step">
-          <div class="process-circle"><i class="bi bi-bell-fill"></i><span class="process-num">03</span></div>
-          <h4>Alerte</h4>
-          <p>Une alerte de niveau modéré, élevé ou critique est créée tout de suite et apparaît sur l'écran de l'éleveur.</p>
-        </div>
-        <div appReveal="up" class="process-step">
-          <div class="process-circle"><i class="bi bi-heart-pulse-fill"></i><span class="process-num">04</span></div>
-          <h4>Soin</h4>
-          <p>L'éleveur et le vétérinaire consultent l'historique et enregistrent les actes médicaux de chaque animal.</p>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- 3c. Chiffres clés (fond en parallaxe) -->
   <section class="stats-band" aria-label="Chiffres clés de la plateforme">

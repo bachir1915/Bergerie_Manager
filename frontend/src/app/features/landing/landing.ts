@@ -38,7 +38,7 @@ export class Landing implements AfterViewInit, OnDestroy {
     const haut = document.documentElement.scrollHeight - window.innerHeight;
     this.progression.set(haut > 0 ? Math.min(100, (y / haut) * 100) : 0);
     let actif = '';
-    for (const id of ['features', 'process', 'faq']) {
+    for (const id of ['features', 'faq']) {
       const r = document.getElementById(id)?.getBoundingClientRect();
       if (r && r.top <= 140 && r.bottom > 140) actif = id;
     }
