@@ -557,6 +557,10 @@
         <span>© 2026 DIOURGUI. Tous droits réservés.</span>
         <span>Conçu pour l'excellence pastorale.</span>
       </div>
+      <button type="button" class="calme-toggle" (click)="basculerMouvement()" [attr.aria-pressed]="calme()">
+        <i class="bi bi-universal-access"></i>
+        {{ calme() ? 'Rétablir les animations' : 'Réduire les animations' }}
+      </button>
       <p class="photo-credit">
         Photos du fond d'accueil, recadrées et assombries :
         <a href="https://commons.wikimedia.org/wiki/File:Local_Senegalese_sheep_-_Troupeau_de_ch%C3%A8vres_s%C3%A9n%C3%A9galais_-_G%C3%A9ttu_bey_yu_S%C3%A9n%C3%A9gal.jpg" target="_blank" rel="noopener">Monicacomma</a>

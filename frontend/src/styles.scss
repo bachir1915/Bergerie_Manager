@@ -618,10 +618,11 @@ tbody tr:nth-child(5) { animation-delay: 0.34s; }
 @keyframes badge-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.14); } }
 
 @keyframes reveal-fade { from { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
+html.mouvement-reduit {
+  scroll-behavior: auto;
   /* apparitions en fondu seulement (sans déplacement), et plus de mouvements en boucle */
   .reveal.reveal-in { animation-name: reveal-fade !important; animation-duration: 0.7s !important; }
   .main-content > *:not(router-outlet), .stats-grid > .stat-card, .dashboard-grid > .card-dark, tbody tr { animation-name: reveal-fade !important; }
   .bell-badge { animation: none; }
+  .reveal { opacity: 1; }
 }

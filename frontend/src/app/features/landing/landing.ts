@@ -21,6 +21,7 @@ export class Landing implements AfterViewInit, OnDestroy {
   private router = inject(Router);
 
   readonly activeTab = signal<FeatureTab>('cheptel');
+  readonly calme = signal(localStorage.getItem('mouvement-reduit') === '1');   // animations réduites à la demande du visiteur
   readonly progression = signal(0);    // barre de lecture en haut de la page
   readonly section = signal('');       // section visible (soulignement du menu)
   readonly motRotatif = signal('');    // mot qui s'écrit sous le titre
@@ -47,7 +48,7 @@ export class Landing implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     // Les chiffres de l'aperçu du tableau de bord « montent » jusqu'à leur valeur pendant l'animation d'entrée.
-    const reduit = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduit = document.documentElement.classList.contains('mouvement-reduit');
     if (!reduit) {
       this.preparerChiffres();
       setTimeout(() => this.ecrire(0, 0, true), 4000);
@@ -100,6 +101,14 @@ export class Landing implements AfterViewInit, OnDestroy {
       };
       requestAnimationFrame(pas);
     });
+  }
+
+  /** Interrupteur « Réduire les animations » (mémorisé dans le navigateur). */
+  basculerMouvement(): void {
+    const reduit = !this.calme();
+    localStorage.setItem('mouvement-reduit', reduit ? '1' : '0');
+    document.documentElement.classList.toggle('mouvement-reduit', reduit);
+    window.location.reload();
   }
 
   ngOnDestroy(): void {

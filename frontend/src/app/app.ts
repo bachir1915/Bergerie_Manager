@@ -16,6 +16,9 @@ export class App {
   private minuteur?: ReturnType<typeof setInterval>;
 
   constructor() {
+    if (localStorage.getItem('mouvement-reduit') === '1') {
+      document.documentElement.classList.add('mouvement-reduit');
+    }
     this.router.events.subscribe((ev) => {
       if (ev instanceof NavigationStart) {
         this.demarrer();

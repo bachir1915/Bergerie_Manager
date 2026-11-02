@@ -1957,7 +1957,7 @@
 }
 
 // Si le système demande de réduire les animations : on garde les apparitions en fondu, sans mouvement
-@media (prefers-reduced-motion: reduce) {
+:host-context(html.mouvement-reduit) {
   .hero-section .hero-title .line-1,
   .hero-section .hero-title .line-2,
   .hero-section .hero-subtitle,
@@ -2069,7 +2069,7 @@
   .brand:hover .brand-icon-wrap { transform: rotate(-8deg) scale(1.08); }
 }
 
-@media (prefers-reduced-motion: reduce) {
+:host-context(html.mouvement-reduit) {
   .hero-section .hero-rotator { animation: reveal-fade 0.7s ease both !important; }
   .cta-banner-section .cta-inner-card, .cta-banner-section .cta-inner-card::before,
   .cta-banner-section .cta-inner-card::after { animation: none !important; }
@@ -2139,7 +2139,7 @@
 @keyframes bg-b { 0%, 46% { opacity: 0; } 54%, 96% { opacity: 1; } 100% { opacity: 0; } }
 @keyframes bg-zoom { from { transform: scale(1); } to { transform: scale(1.12); } }
 
-@media (prefers-reduced-motion: reduce) {
+:host-context(html.mouvement-reduit) {
   .hero-section .hero-bg-slide { animation: none !important; }
   .hero-section .hero-bg-slide.s2 { opacity: 0; }
 }
@@ -2220,7 +2220,7 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
+:host-context(html.mouvement-reduit) {
   .hero-section .hero-scroll { animation: none !important; }
   .hero-preview-section .hero-sheep-photo img, .hero-preview-section .mockup-frame,
   .hero-preview-section .hero-chip, .hero-preview-section .mockup-kpi-card { animation: none !important; }
@@ -2233,3 +2233,12 @@
 
 // Un peu d'air entre la ligne « Une seule plateforme pour suivre… » et les pastilles
 .hero-section .hero-trust-metrics { margin-top: 1.6rem; }
+
+// Interrupteur d'accessibilité (pied de page) : coupe les mouvements pour les personnes qui en ont besoin
+.landing-footer .calme-toggle {
+  margin-top: 1.2rem; display: inline-flex; align-items: center; gap: 0.45rem; cursor: pointer;
+  padding: 0.4rem 0.9rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600;
+  color: rgba(238, 244, 236, 0.85); background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: background 0.3s ease, color 0.3s ease;
+  &:hover { background: rgba(255, 255, 255, 0.16); color: #fff; }
+}

@@ -20,7 +20,7 @@ export class RevealDirective implements OnInit, OnDestroy {
     if (this.revealDelay != null) {
       e.style.animationDelay = `${this.revealDelay}ms`;
     }
-    const reduit = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduit = document.documentElement.classList.contains('mouvement-reduit');
     if (typeof IntersectionObserver === 'undefined' || reduit) {
       e.classList.add('reveal-in');
       return;
