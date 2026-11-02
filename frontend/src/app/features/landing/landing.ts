@@ -49,8 +49,8 @@ export class Landing implements AfterViewInit, OnDestroy {
     // Les chiffres de l'aperçu du tableau de bord « montent » jusqu'à leur valeur pendant l'animation d'entrée.
     const reduit = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!reduit) {
-      setTimeout(() => this.compterChiffres(), 1700);
-      setTimeout(() => this.ecrire(0, 0, true), 2200);
+      setTimeout(() => this.compterChiffres(), 4200);
+      setTimeout(() => this.ecrire(0, 0, true), 4000);
     } else {
       this.motRotatif.set(MOTS[0]);
     }
@@ -74,15 +74,15 @@ export class Landing implements AfterViewInit, OnDestroy {
     if (avance) {
       this.motRotatif.set(mot.slice(0, n + 1));
       if (n + 1 < mot.length) {
-        setTimeout(() => this.ecrire(indice, n + 1, true), 65);
+        setTimeout(() => this.ecrire(indice, n + 1, true), 105);
       } else {
-        setTimeout(() => this.ecrire(indice, n + 1, false), 1900);
+        setTimeout(() => this.ecrire(indice, n + 1, false), 2800);
       }
     } else {
       const restant = mot.slice(0, Math.max(0, n - 1));
       this.motRotatif.set(restant);
       if (restant.length > 0) {
-        setTimeout(() => this.ecrire(indice, n - 1, false), 32);
+        setTimeout(() => this.ecrire(indice, n - 1, false), 55);
       } else {
         setTimeout(() => this.ecrire(indice + 1, 0, true), 350);
       }
@@ -94,7 +94,7 @@ export class Landing implements AfterViewInit, OnDestroy {
       const cible = parseInt(el.dataset['count'] ?? '0', 10);
       const t0 = performance.now();
       const pas = (t: number) => {
-        const k = Math.min(1, (t - t0) / 1800);
+        const k = Math.min(1, (t - t0) / 3000);
         el.textContent = String(Math.round(cible * (1 - Math.pow(1 - k, 3))));
         if (k < 1) requestAnimationFrame(pas);
       };
@@ -116,7 +116,7 @@ export class Landing implements AfterViewInit, OnDestroy {
       const cible = parseFloat(m[1].replace(',', '.'));
       const decimales = (m[1].split(/[.,]/)[1] ?? '').length;
       const t0 = performance.now();
-      const duree = 1700;
+      const duree = 2800;
       const pas = (t: number) => {
         const k = Math.min(1, (t - t0) / duree);
         const ease = 1 - Math.pow(1 - k, 3);
