@@ -2107,3 +2107,70 @@
 .features-section .tab-panel .sensor-card:nth-child(2) { animation-delay: 0.68s; }
 .features-section .tab-panel .sensor-card:nth-child(3) { animation-delay: 1.02s; }
 .features-section .tab-panel .sensor-card:nth-child(4) { animation-delay: 1.36s; }
+
+// =============================================================================================
+// HERO : photo de fond (deux photos de troupeaux au Sénégal qui alternent en fondu, lent zoom) + voile vert
+// =============================================================================================
+.hero-section {
+  background: #12301F;
+
+  .hero-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  .hero-bg-slide {
+    position: absolute; inset: -2%; background-size: cover; background-position: center; will-change: opacity, transform;
+  }
+  .hero-bg-slide.s1 {
+    background-image: url('/images/hero/troupeau-1.jpg');
+    animation: bg-a 22s ease-in-out infinite, bg-zoom 22s ease-in-out infinite alternate;
+  }
+  .hero-bg-slide.s2 {
+    background-image: url('/images/hero/troupeau-2.jpg');
+    animation: bg-b 22s ease-in-out infinite, bg-zoom 22s ease-in-out -11s infinite alternate;
+  }
+  .hero-bg-overlay {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(18, 48, 31, 0.55) 0%, rgba(18, 48, 31, 0.15) 70%),
+      linear-gradient(180deg, rgba(14, 38, 25, 0.82) 0%, rgba(18, 48, 31, 0.68) 45%, rgba(14, 38, 25, 0.9) 100%);
+  }
+
+  .hero-glow { opacity: 0.28; }
+  .hero-container { z-index: 1; }
+
+  // Texte clair sur la photo
+  .hero-title .line-1 { color: #FEFCF5; text-shadow: 0 4px 28px rgba(0, 0, 0, 0.45); }
+  .hero-title .text-gradient {
+    background-image: linear-gradient(90deg, #F6D88A 0%, #FFFFFF 50%, #F6D88A 100%);
+    background-size: 200% auto;
+    filter: drop-shadow(0 4px 22px rgba(0, 0, 0, 0.4));
+  }
+  .hero-subtitle { color: #E6EEE4; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.4); }
+  .hero-rotator { color: #DCE7DA; text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4); }
+  .hero-rotator .rot-word { color: #F6D88A; }
+  .trust-item {
+    color: #EEF4EC; padding: 0.45rem 0.9rem; border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    i { color: #F6D88A !important; }
+  }
+}
+@keyframes bg-a { 0%, 46% { opacity: 1; } 54%, 96% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes bg-b { 0%, 46% { opacity: 0; } 54%, 96% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes bg-zoom { from { transform: scale(1); } to { transform: scale(1.12); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-section .hero-bg-slide { animation: none !important; }
+  .hero-section .hero-bg-slide.s2 { opacity: 0; }
+}
+
+.landing-footer .photo-credit {
+  margin: 1.4rem 0 0; font-size: 0.74rem; line-height: 1.5; color: rgba(211, 224, 213, 0.6);
+  a { color: rgba(246, 216, 138, 0.9); text-decoration: underline; text-underline-offset: 2px; }
+}
+
+// Pastilles du hero : texte clair et lisible sur la photo (même spécificité que la règle d'origine)
+.hero-section .hero-trust-metrics .trust-item {
+  color: #F2F7F0;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
