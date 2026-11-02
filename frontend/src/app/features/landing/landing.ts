@@ -49,7 +49,7 @@ export class Landing implements AfterViewInit, OnDestroy {
     // Les chiffres de l'aperçu du tableau de bord « montent » jusqu'à leur valeur pendant l'animation d'entrée.
     const reduit = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!reduit) {
-      setTimeout(() => this.compterChiffres(), 4200);
+      this.preparerChiffres();
       setTimeout(() => this.ecrire(0, 0, true), 4000);
     } else {
       this.motRotatif.set(MOTS[0]);
@@ -108,9 +108,34 @@ export class Landing implements AfterViewInit, OnDestroy {
     document.documentElement.style.removeProperty('--sy');
   }
 
-  private compterChiffres(): void {
+  /** Met les chiffres de l'aperçu à zéro ; ils montent quand la section entre dans l'écran. */
+  private preparerChiffres(): void {
+    const cartes = document.querySelector('.hero-preview-section .hero-mockup-wrapper');
     document.querySelectorAll<HTMLElement>('.mockup-kpi-card .kpi-number').forEach((el) => {
       const texte = (el.textContent ?? '').trim();
+      const m = texte.match(/^(\d+(?:[.,]\d+)?)(.*)$/);
+      if (m) {
+        const decimales = (m[1].split(/[.,]/)[1] ?? '').length;
+        el.dataset['final'] = texte;
+        el.textContent = (0).toFixed(decimales) + m[2];
+      }
+    });
+    if (cartes && typeof IntersectionObserver !== 'undefined') {
+      const obs = new IntersectionObserver((entrees) => {
+        if (entrees.some((e) => e.isIntersecting)) {
+          setTimeout(() => this.compterChiffres(), 700);
+          obs.disconnect();
+        }
+      }, { threshold: 0.3 });
+      obs.observe(cartes);
+    } else {
+      this.compterChiffres();
+    }
+  }
+
+  private compterChiffres(): void {
+    document.querySelectorAll<HTMLElement>('.mockup-kpi-card .kpi-number').forEach((el) => {
+      const texte = el.dataset['final'] ?? (el.textContent ?? '').trim();
       const m = texte.match(/^(\d+(?:[.,]\d+)?)(.*)$/);
       if (!m) return;
       const cible = parseFloat(m[1].replace(',', '.'));

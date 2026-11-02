@@ -89,14 +89,30 @@
         </div>
       </div>
 
-      <!-- Photo bélier hero + Maquette dynamique interactive du Dashboard -->
+    </div>
+    <a class="hero-scroll" href="#apercu" (click)="scrollToSection('apercu', $event)" aria-label="Voir la suite">
+      <i class="bi bi-chevron-double-down"></i>
+    </a>
+  
+  </section>
+
+  <!-- 2b. Aperçu de la plateforme : photo du bélier et tableau de bord (après le hero, pas sur sa photo) -->
+  <section class="hero-preview-section" id="apercu">
+    <div class="section-container">
+      <div appReveal="down" class="section-badge">
+        <i class="bi bi-window-stack"></i> Aperçu de la plateforme
+      </div>
+      <h2 appReveal="up" class="section-title">Votre tableau de bord, en un coup d'œil</h2>
+      <p appReveal="up" [revealDelay]="100" class="section-sub">
+        Chaque bête, chaque enclos et chaque alerte au même endroit, mis à jour en direct.
+      </p>
       <div class="hero-split-wrapper">
-        <div class="hero-sheep-photo">
+        <div appReveal="left" [revealDelay]="150" class="hero-sheep-photo">
           <img src="images/belier.jpg" alt="Bélier Ouled Djellal — DIOURGUI" loading="lazy" />
           <div class="hero-chip"><i class="bi bi-heart-pulse-fill"></i> Troupeau en bonne santé</div>
         </div>
 
-        <div class="hero-mockup-wrapper hero-mockup-right">
+        <div appReveal="right" [revealDelay]="300" class="hero-mockup-wrapper hero-mockup-right">
           <div class="mockup-frame">
             <div class="mockup-topbar">
               <div class="mockup-dots">
@@ -202,9 +218,10 @@
             </div>
           </div>
         </div><!-- /hero-mockup-right -->
-      </div><!-- /hero-split-wrapper -->
+      </div>
     </div>
   </section>
+
 
   <!-- 3. Section Fonctionnalités Complètes (Onglets Interactifs) -->
   <section class="features-section" id="features">
