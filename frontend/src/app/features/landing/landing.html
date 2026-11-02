@@ -1,4 +1,5 @@
 <div class="landing-page">
+  <div class="scroll-progress" [style.width.%]="progression()" aria-hidden="true"></div>
   <!-- 1. En-tête / Barre de navigation vitrine -->
   <header appReveal="down" [class.scrolled]="scrolled()" class="landing-header">
     <div class="landing-nav-container">
@@ -13,10 +14,11 @@
       </div>
 
       <nav class="nav-links" aria-label="Navigation principale">
-        <a href="#features" (click)="scrollToSection('features', $event)">Fonctionnalités</a>
+        <a href="#features" [class.active]="section() === 'features'" (click)="scrollToSection('features', $event)">Fonctionnalités</a>
         <a href="#features" (click)="scrollToSection('iot', $event)">Capteurs IoT</a>
         <a href="#features" (click)="scrollToSection('sante', $event)">Santé & Prévention</a>
-        <a href="#faq" (click)="scrollToSection('faq', $event)">FAQ</a>
+        <a href="#process" [class.active]="section() === 'process'" (click)="scrollToSection('process', $event)">Étapes</a>
+        <a href="#faq" [class.active]="section() === 'faq'" (click)="scrollToSection('faq', $event)">FAQ</a>
       </nav>
 
       <div class="nav-actions">
@@ -62,6 +64,11 @@
         collaborez étroitement avec votre vétérinaire référent et préservez la vitalité de chaque bête au quotidien.
       </p>
 
+
+      <p class="hero-rotator" aria-live="polite">
+        Une seule plateforme pour suivre
+        <span class="rot-word">{{ motRotatif() }}</span>
+      </p>
 
       <div class="hero-trust-metrics">
         <div class="trust-item">
@@ -198,11 +205,11 @@
   <!-- 3. Section Fonctionnalités Complètes (Onglets Interactifs) -->
   <section class="features-section" id="features">
     <div class="section-container">
-      <div class="section-badge">
+      <div appReveal="down" class="section-badge">
         <i class="bi bi-grid-fill"></i> Plateforme Complète
       </div>
       <h2 appReveal="up" class="section-title">Tout ce qu'il faut pour piloter votre élevage</h2>
-      <p class="section-sub">Découvrez les 4 modules fondamentaux conçus sur mesure pour le quotidien de la bergerie.</p>
+      <p appReveal="up" [revealDelay]="100" class="section-sub">Découvrez les 4 modules fondamentaux conçus sur mesure pour le quotidien de la bergerie.</p>
 
       <!-- Onglets sélecteurs -->
       <div appReveal="up" [revealDelay]="120" class="feature-tabs">
@@ -421,10 +428,72 @@
     </div>
   </section>
 
+
+  <!-- 3b. Comment ça marche : de la mesure à l'action -->
+  <section class="process-section" id="process">
+    <div class="section-container">
+      <div appReveal="down" class="section-badge">
+        <i class="bi bi-diagram-3-fill"></i> Comment ça marche
+      </div>
+      <h2 appReveal="up" class="section-title">De la mesure à l'action en quatre étapes</h2>
+      <p appReveal="up" [revealDelay]="100" class="section-sub">
+        Du boîtier fixé à l'animal jusqu'au soin enregistré par le vétérinaire, tout est relié.
+      </p>
+
+      <div appReveal="up" class="process-steps">
+        <div class="process-line"></div>
+        <div appReveal="up" class="process-step">
+          <div class="process-circle"><i class="bi bi-cpu-fill"></i><span class="process-num">01</span></div>
+          <h4>Capteurs</h4>
+          <p>Le boîtier ESP32 envoie la position GPS toutes les 30 secondes, puis la température, l'humidité et la qualité de l'air toutes les 60 secondes.</p>
+        </div>
+        <div appReveal="up" class="process-step">
+          <div class="process-circle"><i class="bi bi-activity"></i><span class="process-num">02</span></div>
+          <h4>Analyse</h4>
+          <p>Un modèle d'apprentissage repère les comportements anormaux et la sortie de la zone pastorale est contrôlée à chaque position.</p>
+        </div>
+        <div appReveal="up" class="process-step">
+          <div class="process-circle"><i class="bi bi-bell-fill"></i><span class="process-num">03</span></div>
+          <h4>Alerte</h4>
+          <p>Une alerte de niveau modéré, élevé ou critique est créée tout de suite et apparaît sur l'écran de l'éleveur.</p>
+        </div>
+        <div appReveal="up" class="process-step">
+          <div class="process-circle"><i class="bi bi-heart-pulse-fill"></i><span class="process-num">04</span></div>
+          <h4>Soin</h4>
+          <p>L'éleveur et le vétérinaire consultent l'historique et enregistrent les actes médicaux de chaque animal.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3c. Chiffres clés (fond en parallaxe) -->
+  <section class="stats-band" aria-label="Chiffres clés de la plateforme">
+    <div class="section-container">
+      <div class="band-grid">
+        <div appReveal="up" class="band-item">
+          <div class="band-value"><span data-count="30">30</span> s</div>
+          <div class="band-label">entre deux positions GPS d'un animal</div>
+        </div>
+        <div appReveal="up" class="band-item">
+          <div class="band-value"><span data-count="60">60</span> s</div>
+          <div class="band-label">entre deux mesures du climat de l'enclos</div>
+        </div>
+        <div appReveal="up" class="band-item">
+          <div class="band-value"><span data-count="250">250</span></div>
+          <div class="band-label">arbres de décision pour repérer les anomalies</div>
+        </div>
+        <div appReveal="up" class="band-item">
+          <div class="band-value"><span data-count="4">4</span></div>
+          <div class="band-label">niveaux d'alerte : normal, modéré, élevé, critique</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- 4. Section FAQ rapide -->
   <section class="faq-section" id="faq">
     <div class="section-container">
-      <div class="section-badge">
+      <div appReveal="down" class="section-badge">
         <i class="bi bi-question-circle-fill"></i> Questions Fréquentes
       </div>
       <h2 appReveal="up" class="section-title">Tout ce que vous devez savoir avant de commencer</h2>
@@ -469,7 +538,7 @@
   <footer class="landing-footer">
     <div class="section-container">
       <div class="footer-top">
-        <div class="footer-brand">
+        <div appReveal="up" class="footer-brand">
           <div class="brand">
             <div class="brand-icon-wrap">
               <img src="images/logo-bergerie.png" alt="DIOURGUI Logo" class="brand-logo-img" />
@@ -481,7 +550,7 @@
           </p>
         </div>
 
-        <div class="footer-col">
+        <div appReveal="up" class="footer-col">
           <h5>Découverte</h5>
           <ul>
             <li><a href="#features" (click)="scrollToSection('features', $event)">Fonctionnalités</a></li>
@@ -490,7 +559,7 @@
           </ul>
         </div>
 
-        <div class="footer-col">
+        <div appReveal="up" class="footer-col">
           <h5>Accès Rapides</h5>
           <ul>
             <li><a routerLink="/login">Espace Connexion</a></li>

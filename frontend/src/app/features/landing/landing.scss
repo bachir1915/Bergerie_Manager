@@ -1982,3 +1982,183 @@
   .hero-section .hero-sheep-photo img, .btn-nav-primary { animation: none !important; }
   .hero-section .hero-title .line-2::after { animation: none; width: 160px; }
 }
+
+// =============================================================================================
+// PARTIE PUBLIQUE : toutes les sections animées (menu, mots qui s'écrivent, étapes, chiffres, onglets, bandeau, pied)
+// =============================================================================================
+.scroll-progress {
+  position: fixed; top: 0; left: 0; height: 3px; z-index: 1200; pointer-events: none;
+  background: linear-gradient(90deg, var(--forest), var(--gold));
+  box-shadow: 0 0 8px rgba(169, 122, 34, 0.5);
+  transition: width 0.12s linear;
+}
+
+// Menu : soulignement qui se dessine au survol et pour la section visible
+.landing-header .nav-links a {
+  position: relative;
+
+  &::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -4px; height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, var(--forest), var(--gold));
+    transform: scaleX(0); transform-origin: left; transition: transform 0.4s var(--ease-out);
+  }
+
+  &:hover::after, &.active::after { transform: scaleX(1); }
+  &.active { color: var(--forest); }
+}
+
+// Mots qui s'écrivent sous le titre
+.hero-section .hero-rotator {
+  margin: 1.1rem auto 0; font-size: 1.2rem; color: var(--ink-soft); text-align: center;
+  animation: hero-rise 0.9s var(--ease-out) 1.15s backwards;
+
+  .rot-word {
+    display: inline-block; min-width: 2ch; font-weight: 700; color: var(--forest);
+    border-right: 2px solid var(--gold); padding-right: 3px; margin-left: 0.2rem;
+    animation: caret 0.85s steps(1) infinite;
+  }
+}
+@keyframes caret { 50% { border-color: transparent; } }
+
+// Étiquettes « eyebrow » des sections
+.section-badge { transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out); }
+.section-badge:hover { transform: translateY(-3px) scale(1.04); }
+
+// Onglets : le contenu entre en scène à chaque changement
+.features-section .tab-panel {
+  animation: panel-in 0.6s var(--ease-out) backwards;
+
+  .panel-content > * { animation: reveal-up 0.65s var(--ease-out) backwards; }
+  .panel-content > :nth-child(1) { animation-delay: 0.05s; }
+  .panel-content > :nth-child(2) { animation-delay: 0.12s; }
+  .panel-content > :nth-child(3) { animation-delay: 0.19s; }
+  .panel-content > :nth-child(4) { animation-delay: 0.28s; }
+  .panel-content > :nth-child(5) { animation-delay: 0.36s; }
+  .panel-features-list li { animation: reveal-left 0.6s var(--ease-out) backwards; }
+  .panel-features-list li:nth-child(1) { animation-delay: 0.3s; }
+  .panel-features-list li:nth-child(2) { animation-delay: 0.42s; }
+  .panel-features-list li:nth-child(3) { animation-delay: 0.54s; }
+  .panel-features-list li:nth-child(4) { animation-delay: 0.66s; }
+  .panel-visual { animation: reveal-right 0.9s var(--ease-out) 0.15s backwards; }
+}
+@keyframes panel-in { from { opacity: 0; } }
+
+// Comment ça marche : cercles reliés par un trait qui se dessine
+.process-section {
+  padding: 85px 0; scroll-margin-top: 85px;
+  background: color-mix(in srgb, var(--surface-2) 45%, var(--ground));
+
+  .section-container { max-width: 1140px; margin: 0 auto; padding: 0 1.5rem; text-align: center; }
+  .section-title { margin-bottom: 0.6rem; }
+  .section-sub { max-width: 640px; margin: 0 auto; color: var(--ink-soft); }
+
+  .process-steps { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 3.2rem; }
+
+  .process-line {
+    position: absolute; top: 46px; left: 12.5%; right: 12.5%; height: 3px; border-radius: 3px; overflow: hidden;
+    background: color-mix(in srgb, var(--forest) 14%, transparent);
+
+    &::after {
+      content: ''; position: absolute; inset: 0; transform: scaleX(0); transform-origin: left;
+      background: linear-gradient(90deg, var(--forest), var(--gold));
+      transition: transform 2.2s 0.5s var(--ease-out);
+    }
+  }
+  .process-steps.reveal-in .process-line::after { transform: scaleX(1); }
+
+  .process-step { position: relative; z-index: 1; padding: 0 0.4rem; }
+
+  .process-circle {
+    position: relative; width: 92px; height: 92px; margin: 0 auto 1.15rem; border-radius: 50%;
+    display: grid; place-items: center; font-size: 2rem; color: var(--forest);
+    background: var(--surface); border: 2px solid color-mix(in srgb, var(--forest) 30%, transparent);
+    transition: transform 0.4s var(--ease-out), background 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
+
+    &::before {
+      content: ''; position: absolute; inset: -2px; border-radius: 50%; border: 2px solid var(--forest); opacity: 0;
+    }
+
+    .process-num {
+      position: absolute; top: -6px; right: -6px; width: 30px; height: 30px; border-radius: 50%;
+      display: grid; place-items: center; font-size: 0.72rem; font-weight: 800; color: #fff; background: var(--gold);
+    }
+  }
+  .process-step.reveal-in .process-circle::before { animation: ring-out 3s ease-out 1.2s infinite; }
+  .process-step:hover .process-circle {
+    background: var(--forest); color: #fff; transform: translateY(-7px) scale(1.07);
+    box-shadow: 0 20px 36px -14px rgba(18, 48, 31, 0.55);
+  }
+  .process-step:hover .process-circle i { animation: icon-up 0.55s ease; }
+
+  h4 { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: var(--ink); margin: 0 0 0.4rem; }
+  p { font-size: 0.92rem; line-height: 1.55; color: var(--ink-soft); margin: 0; }
+
+  @media (max-width: 860px) {
+    .process-steps { grid-template-columns: repeat(2, 1fr); gap: 2.2rem 1rem; }
+    .process-line { display: none; }
+  }
+}
+@keyframes ring-out { 0% { transform: scale(1); opacity: 0.55; } 100% { transform: scale(1.5); opacity: 0; } }
+
+// Chiffres clés sur photo en parallaxe (la photo reste fixe pendant le défilement)
+.stats-band {
+  position: relative; padding: 95px 0; color: #FEFCF5; text-align: center;
+  background: linear-gradient(rgba(18, 48, 31, 0.84), rgba(18, 48, 31, 0.9)), url('/images/belier.jpg') center 30% / cover fixed;
+
+  .section-container { max-width: 1140px; margin: 0 auto; padding: 0 1.5rem; }
+  .band-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }
+  .band-value {
+    font-family: var(--font-display); font-size: clamp(2.6rem, 5vw, 3.8rem); font-weight: 700; line-height: 1.1;
+    color: #F6D88A; text-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+  }
+  .band-label { margin-top: 0.5rem; font-size: 0.95rem; color: #D3E3D2; max-width: 220px; margin-inline: auto; }
+
+  @media (max-width: 860px) {
+    background-attachment: scroll;
+    .band-grid { grid-template-columns: repeat(2, 1fr); gap: 2.4rem 1rem; }
+  }
+}
+
+// Bandeau final : dégradé qui se déplace et halos qui flottent
+.cta-banner-section .cta-inner-card {
+  background: linear-gradient(120deg, var(--forest), var(--forest-strong), #2a6b48, var(--forest-strong));
+  background-size: 320% 320%;
+  animation: gradient-shift 14s ease-in-out infinite;
+
+  &::before { animation: glow-drift 13s ease-in-out infinite alternate; }
+  &::after {
+    content: ''; position: absolute; bottom: -130px; left: -90px; width: 280px; height: 280px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(246, 216, 138, 0.2) 0%, transparent 70%); pointer-events: none;
+    animation: glow-drift 11s ease-in-out infinite alternate-reverse;
+  }
+}
+@keyframes gradient-shift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+// Pied de page : liens qui glissent, logo qui s'incline
+.landing-footer {
+  .footer-col a { display: inline-block; transition: transform 0.3s var(--ease-out), color 0.3s ease; }
+  .footer-col a:hover { transform: translateX(6px); color: #F6D88A; }
+  .brand-icon-wrap { transition: transform 0.5s var(--ease-out); }
+  .brand:hover .brand-icon-wrap { transform: rotate(-8deg) scale(1.08); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-section .hero-rotator { animation: reveal-fade 0.7s ease both !important; }
+  .hero-section .hero-rotator .rot-word, .process-section .process-circle::before,
+  .cta-banner-section .cta-inner-card, .cta-banner-section .cta-inner-card::before,
+  .cta-banner-section .cta-inner-card::after { animation: none !important; }
+  .process-section .process-line::after { transition: none; transform: scaleX(1); }
+  .features-section .tab-panel, .features-section .tab-panel * { animation-name: reveal-fade !important; }
+  .stats-band { background-attachment: scroll; }
+}
+
+// Étiquette de la section « Comment ça marche » (même style que les autres sections)
+.process-section .section-badge {
+  display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+  color: var(--forest); background: var(--success-fill); padding: 0.3rem 0.85rem; border-radius: 9999px; margin-bottom: 1rem;
+}
+
+// Menu plus compact : les libellés ne se coupent plus sur plusieurs lignes
+.landing-header .nav-links { gap: 0.4rem; }
+.landing-header .nav-links a { white-space: nowrap; font-size: 0.88rem; padding: 0.4rem 0.55rem; }
+.landing-header .btn-nav-primary, .landing-header .btn-nav-ghost { white-space: nowrap; }

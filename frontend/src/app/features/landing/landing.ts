@@ -7,6 +7,8 @@ import { RevealDirective } from '../../core/directives/reveal.directive';
 
 type FeatureTab = 'cheptel' | 'iot' | 'vet' | 'sante';
 
+const MOTS = ['la santé de chaque bête', 'la position GPS en direct', 'le climat de vos enclos', 'les alertes précoces', 'les soins de votre vétérinaire'];
+
 @Component({
   selector: 'app-landing',
   standalone: true,
@@ -19,6 +21,11 @@ export class Landing implements AfterViewInit, OnDestroy {
   private router = inject(Router);
 
   readonly activeTab = signal<FeatureTab>('cheptel');
+  readonly progression = signal(0);    // barre de lecture en haut de la page
+  readonly section = signal('');       // section visible (soulignement du menu)
+  readonly motRotatif = signal('');    // mot qui s'écrit sous le titre
+  private arret = false;
+  private observateur?: IntersectionObserver;
   readonly scrolled = signal(false);   // en-tête plus compact et ombré après un peu de défilement
   readonly showTop = signal(false);    // bouton « revenir en haut »
 
@@ -27,7 +34,15 @@ export class Landing implements AfterViewInit, OnDestroy {
     const y = window.scrollY || document.documentElement.scrollTop;
     this.scrolled.set(y > 40);
     this.showTop.set(y > 350);
-    document.documentElement.style.setProperty('--sy', String(Math.min(y, 900)));   // parallaxe des halos du hero
+    document.documentElement.style.setProperty('--sy', String(Math.min(y, 900)));
+    const haut = document.documentElement.scrollHeight - window.innerHeight;
+    this.progression.set(haut > 0 ? Math.min(100, (y / haut) * 100) : 0);
+    let actif = '';
+    for (const id of ['features', 'process', 'faq']) {
+      const r = document.getElementById(id)?.getBoundingClientRect();
+      if (r && r.top <= 140 && r.bottom > 140) actif = id;
+    }
+    this.section.set(actif);   // parallaxe des halos du hero
   }
 
   ngAfterViewInit(): void {
@@ -35,10 +50,61 @@ export class Landing implements AfterViewInit, OnDestroy {
     const reduit = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!reduit) {
       setTimeout(() => this.compterChiffres(), 1700);
+      setTimeout(() => this.ecrire(0, 0, true), 2200);
+    } else {
+      this.motRotatif.set(MOTS[0]);
+    }
+    // Les chiffres clés montent jusqu'à leur valeur quand la bande entre dans l'écran.
+    const bande = document.querySelector('.stats-band');
+    if (bande && typeof IntersectionObserver !== 'undefined' && !reduit) {
+      this.observateur = new IntersectionObserver((entrees) => {
+        if (entrees.some((e) => e.isIntersecting)) {
+          this.compterBande();
+          this.observateur?.disconnect();
+        }
+      }, { threshold: 0.35 });
+      this.observateur.observe(bande);
     }
   }
 
+  /** Machine à écrire : écrit un mot, le garde un instant, l'efface, passe au suivant. */
+  private ecrire(indice: number, n: number, avance: boolean): void {
+    if (this.arret) return;
+    const mot = MOTS[indice % MOTS.length];
+    if (avance) {
+      this.motRotatif.set(mot.slice(0, n + 1));
+      if (n + 1 < mot.length) {
+        setTimeout(() => this.ecrire(indice, n + 1, true), 65);
+      } else {
+        setTimeout(() => this.ecrire(indice, n + 1, false), 1900);
+      }
+    } else {
+      const restant = mot.slice(0, Math.max(0, n - 1));
+      this.motRotatif.set(restant);
+      if (restant.length > 0) {
+        setTimeout(() => this.ecrire(indice, n - 1, false), 32);
+      } else {
+        setTimeout(() => this.ecrire(indice + 1, 0, true), 350);
+      }
+    }
+  }
+
+  private compterBande(): void {
+    document.querySelectorAll<HTMLElement>('.stats-band [data-count]').forEach((el) => {
+      const cible = parseInt(el.dataset['count'] ?? '0', 10);
+      const t0 = performance.now();
+      const pas = (t: number) => {
+        const k = Math.min(1, (t - t0) / 1800);
+        el.textContent = String(Math.round(cible * (1 - Math.pow(1 - k, 3))));
+        if (k < 1) requestAnimationFrame(pas);
+      };
+      requestAnimationFrame(pas);
+    });
+  }
+
   ngOnDestroy(): void {
+    this.arret = true;
+    this.observateur?.disconnect();
     document.documentElement.style.removeProperty('--sy');
   }
 
