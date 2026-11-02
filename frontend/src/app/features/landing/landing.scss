@@ -2013,12 +2013,9 @@
   animation: hero-rise 0.9s var(--ease-out) 1.15s backwards;
 
   .rot-word {
-    display: inline-block; min-width: 2ch; font-weight: 700; color: var(--forest);
-    border-right: 2px solid var(--gold); padding-right: 3px; margin-left: 0.2rem;
-    animation: caret 0.85s steps(1) infinite;
+    display: inline-block; min-width: 2ch; font-weight: 700; color: var(--forest); margin-left: 0.2rem;
   }
 }
-@keyframes caret { 50% { border-color: transparent; } }
 
 // Étiquettes « eyebrow » des sections
 .section-badge { transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out); }
@@ -2144,7 +2141,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hero-section .hero-rotator { animation: reveal-fade 0.7s ease both !important; }
-  .hero-section .hero-rotator .rot-word, .process-section .process-circle::before,
+  .process-section .process-circle::before,
   .cta-banner-section .cta-inner-card, .cta-banner-section .cta-inner-card::before,
   .cta-banner-section .cta-inner-card::after { animation: none !important; }
   .process-section .process-line::after { transition: none; transform: scaleX(1); }
@@ -2162,3 +2159,16 @@
 .landing-header .nav-links { gap: 0.4rem; }
 .landing-header .nav-links a { white-space: nowrap; font-size: 0.88rem; padding: 0.4rem 0.55rem; }
 .landing-header .btn-nav-primary, .landing-header .btn-nav-ghost { white-space: nowrap; }
+
+// Cartes qui arrivent l'une après l'autre (0,2 s entre chacune)
+.hero-section .mockup-kpi-card { animation: pop-in 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) backwards; }
+.hero-section .mockup-kpi-card:nth-child(1) { animation-delay: 2s; }
+.hero-section .mockup-kpi-card:nth-child(2) { animation-delay: 2.2s; }
+.hero-section .mockup-kpi-card:nth-child(3) { animation-delay: 2.4s; }
+.hero-section .mockup-kpi-card:nth-child(4) { animation-delay: 2.6s; }
+
+.features-section .tab-panel .sensor-card { animation: reveal-up 0.65s var(--ease-out) backwards; }
+.features-section .tab-panel .sensor-card:nth-child(1) { animation-delay: 0.2s; }
+.features-section .tab-panel .sensor-card:nth-child(2) { animation-delay: 0.4s; }
+.features-section .tab-panel .sensor-card:nth-child(3) { animation-delay: 0.6s; }
+.features-section .tab-panel .sensor-card:nth-child(4) { animation-delay: 0.8s; }

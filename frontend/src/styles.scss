@@ -560,17 +560,18 @@ html { scroll-behavior: smooth; }
 .reveal { opacity: 0; }
 .reveal.reveal-in {
   opacity: 1;
-  animation: reveal-up 0.85s var(--ease-out) backwards;
+  animation: reveal-up 0.7s var(--ease-out) backwards;
   &[data-reveal='down'] { animation-name: reveal-down; }
   &[data-reveal='left'] { animation-name: reveal-left; }
   &[data-reveal='right'] { animation-name: reveal-right; }
   &[data-reveal='zoom'] { animation-name: reveal-zoom; }
 }
 /* décalage progressif entre blocs frères */
-.reveal.reveal-in:nth-child(2) { animation-delay: 0.12s; }
-.reveal.reveal-in:nth-child(3) { animation-delay: 0.24s; }
-.reveal.reveal-in:nth-child(4) { animation-delay: 0.36s; }
-.reveal.reveal-in:nth-child(5) { animation-delay: 0.48s; }
+.reveal.reveal-in:nth-child(2) { animation-delay: 0.2s; }
+.reveal.reveal-in:nth-child(3) { animation-delay: 0.4s; }
+.reveal.reveal-in:nth-child(4) { animation-delay: 0.6s; }
+.reveal.reveal-in:nth-child(5) { animation-delay: 0.8s; }
+.reveal.reveal-in:nth-child(6) { animation-delay: 1s; }
 @keyframes reveal-up { from { opacity: 0; transform: translateY(42px); } }
 @keyframes reveal-down { from { opacity: 0; transform: translateY(-42px); } }
 @keyframes reveal-left { from { opacity: 0; transform: translateX(-56px); } }
@@ -597,14 +598,14 @@ html { scroll-behavior: smooth; }
 .main-content > *:not(router-outlet) { animation: page-in 0.5s var(--ease-out) backwards; }
 @keyframes page-in { from { opacity: 0; transform: translateY(14px); } }
 .stats-grid > .stat-card { animation: reveal-up 0.6s var(--ease-out) backwards; }
-.stats-grid > .stat-card:nth-child(2) { animation-delay: 0.07s; }
-.stats-grid > .stat-card:nth-child(3) { animation-delay: 0.14s; }
-.stats-grid > .stat-card:nth-child(4) { animation-delay: 0.21s; }
-.stats-grid > .stat-card:nth-child(5) { animation-delay: 0.28s; }
+.stats-grid > .stat-card:nth-child(2) { animation-delay: 0.15s; }
+.stats-grid > .stat-card:nth-child(3) { animation-delay: 0.3s; }
+.stats-grid > .stat-card:nth-child(4) { animation-delay: 0.45s; }
+.stats-grid > .stat-card:nth-child(5) { animation-delay: 0.6s; }
 .stat-card, .card-dark { transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out); }
 .stat-card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px -14px rgba(18, 48, 31, 0.28); }
 .dashboard-grid > .card-dark { animation: reveal-up 0.65s var(--ease-out) backwards; }
-.dashboard-grid > .card-dark:nth-child(2) { animation-delay: 0.12s; }
+.dashboard-grid > .card-dark:nth-child(2) { animation-delay: 0.3s; }
 tbody tr { animation: row-in 0.45s var(--ease-out) backwards; }
 tbody tr:nth-child(2) { animation-delay: 0.05s; }
 tbody tr:nth-child(3) { animation-delay: 0.1s; }
